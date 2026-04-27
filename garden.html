@@ -188,7 +188,6 @@
             <button class="tab-btn bg-paper soft-shadow px-3 md:px-4 py-1.5 md:py-2 rounded-lg border border-sage/10 text-earth hover:text-sage transition-all duration-300 text-xs md:text-sm" data-tab="knowledge"><i class="fa fa-bookmark-o mr-1"></i>显化知识库</button>
         </div>
     </nav>
-    <!-- 浮动计数器 -->
     <div id="float-counter" class="float-counter">
         <div class="flex items-center gap-3">
             <button id="fc-btn" class="fc-btn"><i class="fa fa-heart"></i></button>
@@ -214,7 +213,6 @@
             <button id="fc-reset"><i class="fa fa-refresh mr-1"></i>重置今日</button>
         </div>
     </div>
-    <!-- 浮动静心时刻 -->
     <div id="float-meditation" class="float-meditation">
         <div class="flex items-center gap-3">
             <button id="fm-btn" class="fm-btn"><i class="fa fa-moon-o"></i></button>
@@ -263,7 +261,6 @@
         <button class="theme-btn" data-theme="forest" style="background:#6b8f6b" title="森林"></button>
     </div>
     <main class="max-w-6xl mx-auto px-3 md:px-4 pb-20 relative z-10">
-        <!-- 显化中心 -->
         <section id="counter" class="tab-content active fade-in">
             <div class="bg-paper soft-shadow rounded-2xl p-6 md:p-10 vine-border">
                 <div class="bg-sageLight/20 rounded-xl p-5 md:p-6 mb-6 md:mb-8 text-center">
@@ -288,7 +285,6 @@
                 <div id="affirmations-list" class="grid grid-cols-1 md:grid-cols-2 gap-3 max-h-[500px] overflow-y-auto pr-1"></div>
             </div>
         </section>
-        <!-- 愿景花园 -->
         <section id="vision" class="tab-content hidden fade-in">
             <div class="bg-paper soft-shadow rounded-2xl p-4 md:p-8 vine-border" style="max-width:100%">
                 <div class="flex flex-wrap justify-between items-center mb-4 md:mb-6 gap-3">
@@ -310,7 +306,6 @@
                 </div>
             </div>
         </section>
-        <!-- 显化知识库 -->
         <section id="knowledge" class="tab-content hidden fade-in">
             <div class="bg-paper soft-shadow rounded-2xl p-4 md:p-8 vine-border" style="max-width:100%">
                 <div class="flex flex-wrap justify-between items-center mb-4 md:mb-6 gap-3">
@@ -331,7 +326,6 @@
                 </div>
             </div>
         </section>
-        <!-- 酥饼仓库 -->
         <section id="subs" class="tab-content hidden fade-in">
             <div class="bg-paper soft-shadow rounded-2xl p-4 md:p-8 vine-border">
                 <div class="flex justify-between items-center mb-4 md:mb-6"><h2 class="text-xl md:text-2xl font-serif text-earth">🍪 酥饼仓库</h2></div>
@@ -352,13 +346,11 @@
                 <div id="subs-list" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4"></div>
             </div>
         </section>
-        <!-- 感恩日记 -->
         <section id="gratitude" class="tab-content hidden fade-in">
             <div class="bg-paper soft-shadow rounded-2xl p-4 md:p-8 vine-border">
                 <div class="flex justify-between items-center mb-4 md:mb-6">
                     <h2 class="text-xl md:text-2xl font-serif text-earth">📜 感恩日记</h2>
                 </div>
-                <!-- 发帖输入框 -->
                 <div class="bg-white/60 rounded-xl p-4 mb-6 soft-shadow">
                     <div class="flex items-start gap-3">
                         <div class="w-10 h-10 rounded-full bg-sage/20 flex items-center justify-center text-sage flex-shrink-0"><i class="fa fa-user"></i></div>
@@ -393,513 +385,311 @@
     </footer>
 
     <script>
-        // 数据存储核心对象
         const GardenData = {
-            // 初始化默认数据结构
             init() {
                 const defaultData = {
-                    affirmations: [ // 显化句列表
+                    affirmations: [
                         { id: 1, text: '我值得拥有所有美好的事物', category: '自我成长', count: 0, createTime: new Date().toISOString() },
                         { id: 2, text: '财富源源不断地流向我', category: '财富', count: 0, createTime: new Date().toISOString() },
                         { id: 3, text: '我的事业蒸蒸日上', category: '事业', count: 0, createTime: new Date().toISOString() },
                         { id: 4, text: '我拥有健康的身体和积极的心态', category: '健康', count: 0, createTime: new Date().toISOString() },
                         { id: 5, text: '我拥有充满爱的人际关系', category: '关系', count: 0, createTime: new Date().toISOString() }
                     ],
-                    categories: ['财富', '事业', '健康', '关系', '自我成长'], // 分类列表
-                    visionBoard: [], // 愿景花园数据
-                    knowledgeBoard: [], // 显化知识库数据
-                    subs: [], // 酥饼仓库数据
-                    subCategories: ['显化', '冥想', '疗愈', '成长'], // 酥饼分类
-                    gratitude: [], // 感恩日记数据
-                    counter: { // 计数器数据
-                        today: 0,
-                        goal: 108,
-                        week: 0,
-                        total: 0,
-                        lastReset: new Date().toISOString().split('T')[0]
-                    },
-                    heroBanner: { // 顶部banner数据
-                        customImage: '',
-                        useDefault: true
-                    },
-                    theme: 'sage', // 当前主题
-                    meditation: { // 冥想计时器数据
-                        time: 300,
-                        isRunning: false,
-                        currentTime: 300,
-                        noise: '',
-                        volume: 40
-                    }
-                };
-
-                // 如果本地存储无数据，初始化默认数据
-                if (!localStorage.getItem('gardenData')) {
-                    this.save(defaultData);
-                }
-                return this.load();
-            },
-
-            // 加载数据
-            load() {
-                try {
-                    const data = JSON.parse(localStorage.getItem('gardenData') || '{}');
-                    return { ...this.initDefault(), ...data };
-                } catch (e) {
-                    console.error('加载数据失败', e);
-                    return this.initDefault();
-                }
-            },
-
-            // 初始化默认值（防止数据缺失）
-            initDefault() {
-                return {
-                    affirmations: [],
                     categories: ['财富', '事业', '健康', '关系', '自我成长'],
                     visionBoard: [],
                     knowledgeBoard: [],
                     subs: [],
                     subCategories: ['显化', '冥想', '疗愈', '成长'],
                     gratitude: [],
-                    counter: {
-                        today: 0,
-                        goal: 108,
-                        week: 0,
-                        total: 0,
-                        lastReset: new Date().toISOString().split('T')[0]
-                    },
-                    heroBanner: {
-                        customImage: '',
-                        useDefault: true
-                    },
+                    counter: { today: 0, goal: 108, week: 0, total: 0, lastReset: new Date().toISOString().split('T')[0] },
+                    heroBanner: { customImage: '', useDefault: true },
                     theme: 'sage',
-                    meditation: {
-                        time: 300,
-                        isRunning: false,
-                        currentTime: 300,
-                        noise: '',
-                        volume: 40
-                    }
+                    meditation: { time: 300, isRunning: false, currentTime: 300, noise: '', volume: 40 }
+                };
+                if (!localStorage.getItem('gardenData')) { this.save(defaultData); }
+                return this.load();
+            },
+            load() {
+                try {
+                    const data = JSON.parse(localStorage.getItem('gardenData') || '{}');
+                    return { ...this.initDefault(), ...data };
+                } catch (e) { return this.initDefault(); }
+            },
+            initDefault() {
+                return {
+                    affirmations: [], categories: ['财富', '事业', '健康', '关系', '自我成长'], visionBoard: [], knowledgeBoard: [],
+                    subs: [], subCategories: ['显化', '冥想', '疗愈', '成长'], gratitude: [],
+                    counter: { today: 0, goal: 108, week: 0, total: 0, lastReset: new Date().toISOString().split('T')[0] },
+                    heroBanner: { customImage: '', useDefault: true }, theme: 'sage',
+                    meditation: { time: 300, isRunning: false, currentTime: 300, noise: '', volume: 40 }
                 };
             },
-
-            // 保存数据
-            save(data) {
-                localStorage.setItem('gardenData', JSON.stringify(data));
-            },
-
-            // 更新部分数据
+            save(data) { localStorage.setItem('gardenData', JSON.stringify(data)); },
             update(key, value) {
                 const data = this.load();
-                if (typeof key === 'object') {
-                    Object.assign(data, key);
-                } else {
-                    data[key] = value;
-                }
-                this.save(data);
-                return data;
+                if (typeof key === 'object') { Object.assign(data, key); } else { data[key] = value; }
+                this.save(data); return data;
             },
-
-            // 获取指定数据
-            get(key) {
-                const data = this.load();
-                return key ? data[key] : data;
-            }
+            get(key) { const data = this.load(); return key ? data[key] : data; }
         };
 
-        // 工具函数
         const Utils = {
-            // 生成唯一ID
-            generateId() {
-                return Date.now() + '-' + Math.random().toString(36).substr(2, 9);
+            generateId() { return Date.now() + '-' + Math.random().toString(36).substr(2, 9); },
+            formatTime(seconds) { const m = Math.floor(seconds/60), s=seconds%60; return `${m.toString().padStart(2,'0')}:${s.toString().padStart(2,'0')}`; },
+            showToast(m,t='success'){
+                const c=document.getElementById('toast-container');
+                const d=document.createElement('div');d.className=`toast ${t}`;d.textContent=m;c.appendChild(d);
+                setTimeout(()=>d.remove(),3000);
             },
-
-            // 格式化时间
-            formatTime(seconds) {
-                const mins = Math.floor(seconds / 60);
-                const secs = seconds % 60;
-                return `${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
-            },
-
-            // 显示提示框
-            showToast(message, type = 'success') {
-                const container = document.getElementById('toast-container');
-                const toast = document.createElement('div');
-                toast.className = `toast ${type}`;
-                toast.textContent = message;
-                container.appendChild(toast);
-                
-                setTimeout(() => {
-                    toast.remove();
-                }, 3000);
-            },
-
-            // 显示确认框
-            showConfirm(message, confirmCallback) {
-                if (confirm(message)) {
-                    confirmCallback();
-                }
-            },
-
-            // 图片转base64
-            fileToBase64(file, callback) {
-                const reader = new FileReader();
-                reader.onload = (e) => callback(e.target.result);
-                reader.readAsDataURL(file);
-            },
-
-            // 检查日期是否为今日
-            isToday(dateStr) {
-                const today = new Date().toISOString().split('T')[0];
-                return dateStr === today;
-            }
+            showConfirm(m,cb){if(confirm(m))cb();},
+            fileToBase64(f,cb){const r=new FileReader();r.onload=e=>cb(e.target.result);r.readAsDataURL(f);},
+            isToday(d){return d===new Date().toISOString().split('T')[0];}
         };
 
-        // 页面初始化
-        document.addEventListener('DOMContentLoaded', function() {
-            const gardenData = GardenData.init();
-            
-            // 初始化标签切换
-            initTabSwitch();
-            
-            // 初始化显化中心
-            initCounterTab();
-            
-            // 初始化愿景花园
-            initVisionTab();
-            
-            // 初始化酥饼仓库
-            initSubsTab();
-            
-            // 初始化感恩日记
-            initGratitudeTab();
-            
-            // 初始化显化知识库
-            initKnowledgeTab();
-            
-            // 初始化浮动计数器
-            initFloatCounter();
-            
-            // 初始化冥想计时器
-            initMeditationTimer();
-            
-            // 初始化主题切换
-            initThemeSwitch();
-            
-            // 初始化顶部Banner
-            initHeroBanner();
-            
-            Utils.showToast('数据已加载完成', 'success');
+        document.addEventListener('DOMContentLoaded',()=>{
+            GardenData.init();initTabSwitch();initCounterTab();initVisionTab();initSubsTab();initGratitudeTab();initKnowledgeTab();initFloatCounter();initMeditationTimer();initThemeSwitch();initHeroBanner();Utils.showToast('数据已加载完成','success');
         });
 
-        // 标签切换
-        function initTabSwitch() {
-            const tabBtns = document.querySelectorAll('.tab-btn');
-            const tabContents = document.querySelectorAll('.tab-content');
-            
-            tabBtns.forEach(btn => {
-                btn.addEventListener('click', function() {
-                    // 移除所有激活状态
-                    tabBtns.forEach(b => b.classList.remove('active'));
-                    tabContents.forEach(c => c.classList.add('hidden'));
-                    
-                    // 添加当前激活状态
-                    this.classList.add('active');
-                    const tabId = this.getAttribute('data-tab');
-                    document.getElementById(tabId).classList.remove('hidden');
+        function initTabSwitch(){
+            document.querySelectorAll('.tab-btn').forEach(b=>{
+                b.addEventListener('click',()=>{
+                    document.querySelectorAll('.tab-btn').forEach(x=>x.classList.remove('active'));
+                    document.querySelectorAll('.tab-content').forEach(x=>x.classList.add('hidden'));
+                    b.classList.add('active');
+                    document.getElementById(b.dataset.tab).classList.remove('hidden');
                 });
             });
         }
 
-        // 初始化显化中心
-        function initCounterTab() {
-            const data = GardenData.get();
-            const affirmationsList = document.getElementById('affirmations-list');
-            const newAffirmationInput = document.getElementById('new-affirmation');
-            const addAffirmationBtn = document.getElementById('add-affirmation');
-            const categorySelect = document.getElementById('affirmation-category');
-            const categoryContainer = document.getElementById('category-container');
-            const randomAffirmation = document.getElementById('random-affirmation');
-            const nextAffirmationBtn = document.getElementById('next-affirmation');
-            const fcAffSelect = document.getElementById('fc-aff-select');
+        function initCounterTab(){
+            const list=document.getElementById('affirmations-list');
+            const input=document.getElementById('new-affirmation');
+            const add=document.getElementById('add-affirmation');
+            const catSelect=document.getElementById('affirmation-category');
+            const catContainer=document.getElementById('category-container');
+            const randomAff=document.getElementById('random-affirmation');
+            const nextAff=document.getElementById('next-affirmation');
+            const fcAff=document.getElementById('fc-aff-select');
 
-            // 渲染显化句列表
-            function renderAffirmations(filter = 'all') {
-                const affirmations = GardenData.get('affirmations') || [];
-                affirmationsList.innerHTML = '';
-                
-                // 更新计数器下拉选择
-                fcAffSelect.innerHTML = '<option value="">不指定A句（仅总计）</option>';
-                
-                // 过滤显化句
-                const filteredAffs = filter === 'all' 
-                    ? affirmations 
-                    : affirmations.filter(aff => aff.category === filter);
-                
-                if (filteredAffs.length === 0) {
-                    affirmationsList.innerHTML = `
-                        <div class="col-span-1 md:col-span-2 text-center py-8 text-sage/70">
-                            <i class="fa fa-comment-o text-4xl mb-2"></i>
-                            <p>暂无显化句，添加你的第一条显化句吧</p>
-                        </div>
-                    `;
-                    return;
-                }
-                
-                // 渲染显化句卡片
-                filteredAffs.forEach(aff => {
-                    // 添加到计数器下拉
-                    const option = document.createElement('option');
-                    option.value = aff.id;
-                    option.textContent = aff.text.substring(0, 20) + (aff.text.length > 20 ? '...' : '');
-                    fcAffSelect.appendChild(option);
-                    
-                    // 创建显化句卡片
-                    const card = document.createElement('div');
-                    card.className = 'aff-card fade-in';
-                    card.setAttribute('data-id', aff.id);
-                    card.innerHTML = `
+            function render(filter='all'){
+                const data=GardenData.get('affirmations')||[];
+                list.innerHTML='';
+                fcAff.innerHTML='<option value="">不指定A句（仅总计）</option>';
+                const fdata=filter==='all'?data:data.filter(x=>x.category===filter);
+                if(fdata.length===0){list.innerHTML=`<div class="col-span-1 md:col-span-2 text-center py-8 text-sage/70"><i class="fa fa-comment-o text-4xl mb-2"></i><p>暂无显化句</p></div>`;return;}
+                fdata.forEach(aff=>{
+                    const opt=document.createElement('option');opt.value=aff.id;opt.textContent=aff.text.slice(0,20)+'...';fcAff.appendChild(opt);
+                    const card=document.createElement('div');card.className='aff-card fade-in';card.dataset.id=aff.id;
+                    card.innerHTML=`
                         <div class="flex-1">
                             <p class="text-earth font-medium">${aff.text}</p>
-                            <div class="aff-progress">
-                                <div class="aff-progress-bar bg-sage" style="width: ${Math.min(100, (aff.count / GardenData.get('counter').goal) * 100)}%"></div>
-                            </div>
-                            <p class="text-xs text-sage mt-1">
-                                <span>${aff.count}/${GardenData.get('counter').goal}</span>
-                                <span class="ml-2">分类: ${aff.category}</span>
-                            </p>
+                            <div class="aff-progress"><div class="aff-progress-bar bg-sage" style="width:${Math.min(100,(aff.count/GardenData.get('counter').goal)*100)}%"></div></div>
+                            <p class="text-xs text-sage mt-1"><span>${aff.count}/${GardenData.get('counter').goal}</span><span class="ml-2">${aff.category}</span></p>
                         </div>
                         <div class="flex gap-2">
-                            <button class="aff-count-btn bounce-click text-sage hover:text-earth" title="增加计数">
-                                <i class="fa fa-plus-circle"></i>
-                            </button>
-                            <button class="aff-edit-btn bounce-click text-gold hover:text-earth" title="编辑">
-                                <i class="fa fa-pencil"></i>
-                            </button>
-                            <button class="aff-delete-btn bounce-click text-red-400 hover:text-red-500" title="删除">
-                                <i class="fa fa-trash-o"></i>
-                            </button>
+                            <button class="aff-count-btn bounce-click text-sage"><i class="fa fa-plus-circle"></i></button>
+                            <button class="aff-edit-btn bounce-click text-gold"><i class="fa fa-pencil"></i></button>
+                            <button class="aff-delete-btn bounce-click text-red-400"><i class="fa fa-trash-o"></i></button>
                         </div>
                     `;
-                    affirmationsList.appendChild(card);
-                    
-                    // 绑定卡片事件
-                    card.querySelector('.aff-count-btn').addEventListener('click', () => updateAffirmationCount(aff.id, 1));
-                    card.querySelector('.aff-edit-btn').addEventListener('click', () => editAffirmation(aff.id));
-                    card.querySelector('.aff-delete-btn').addEventListener('click', () => deleteAffirmation(aff.id));
+                    list.appendChild(card);
+                    card.querySelector('.aff-count-btn').onclick=()=>{
+                        const d=GardenData.load();
+                        const i=d.affirmations.findIndex(x=>x.id==aff.id);
+                        if(i!==-1){d.affirmations[i].count++;d.counter.today++;d.counter.total++;GardenData.save(d);render();updateFloatCounter();Utils.showToast('计数+1');}
+                    };
+                    card.querySelector('.aff-edit-btn').onclick=()=>{
+                        const d=GardenData.load();const a=d.affirmations.find(x=>x.id==aff.id);
+                        if(a){const t=prompt('编辑',a.text);if(t){a.text=t;GardenData.save(d);render();Utils.showToast('已更新');}}
+                    };
+                    card.querySelector('.aff-delete-btn').onclick=()=>{
+                        Utils.showConfirm('确定删除？',()=>{const d=GardenData.load();d.affirmations=d.affirmations.filter(x=>x.id!=aff.id);GardenData.save(d);render();Utils.showToast('已删除','info');});
+                    };
                 });
-                
-                // 更新随机显化句
-                updateRandomAffirmation();
+                randomAff.textContent=fdata[Math.floor(Math.random()*fdata.length)]?.text||'我值得美好';
             }
 
-            // 更新随机显化句
-            function updateRandomAffirmation() {
-                const affirmations = GardenData.get('affirmations') || [];
-                if (affirmations.length > 0) {
-                    const randomIdx = Math.floor(Math.random() * affirmations.length);
-                    randomAffirmation.textContent = affirmations[randomIdx].text;
-                }
+            function addAff(){
+                const t=input.value.trim();const c=catSelect.value;
+                if(!t){Utils.showToast('请输入内容','warn');return;}
+                const d=GardenData.load();
+                d.affirmations.push({id:Utils.generateId(),text:t,category:c,count:0,createTime:new Date().toISOString()});
+                GardenData.save(d);input.value='';render();Utils.showToast('添加成功');
             }
 
-            // 更新显化句计数
-            function updateAffirmationCount(id, increment) {
-                const data = GardenData.load();
-                const affIndex = data.affirmations.findIndex(a => a.id == id);
-                
-                if (affIndex !== -1) {
-                    data.affirmations[affIndex].count += increment;
-                    data.counter.today += increment;
-                    data.counter.total += increment;
-                    
-                    // 检查是否跨周
-                    const now = new Date();
-                    const day = now.getDay();
-                    if (day === 0) { // 周日重置周计数
-                        data.counter.week = data.counter.today;
-                    } else {
-                        data.counter.week += increment;
-                    }
-                    
-                    GardenData.save(data);
-                    renderAffirmations(document.querySelector('.category-btn.active')?.getAttribute('data-category') || 'all');
-                    updateFloatCounter();
-                    Utils.showToast('计数已更新', 'success');
-                }
-            }
-
-            // 添加显化句
-            function addAffirmation() {
-                const text = newAffirmationInput.value.trim();
-                const category = categorySelect.value;
-                
-                if (!text) {
-                    Utils.showToast('请输入显化句内容', 'warn');
-                    return;
-                }
-                
-                const data = GardenData.load();
-                const newAff = {
-                    id: Utils.generateId(),
-                    text,
-                    category,
-                    count: 0,
-                    createTime: new Date().toISOString()
-                };
-                
-                data.affirmations.push(newAff);
-                GardenData.save(data);
-                
-                newAffirmationInput.value = '';
-                renderAffirmations(document.querySelector('.category-btn.active')?.getAttribute('data-category') || 'all');
-                Utils.showToast('显化句添加成功', 'success');
-            }
-
-            // 编辑显化句
-            function editAffirmation(id) {
-                const data = GardenData.load();
-                const aff = data.affirmations.find(a => a.id == id);
-                
-                if (aff) {
-                    const newText = prompt('编辑显化句', aff.text);
-                    if (newText && newText.trim()) {
-                        aff.text = newText.trim();
-                        GardenData.save(data);
-                        renderAffirmations(document.querySelector('.category-btn.active')?.getAttribute('data-category') || 'all');
-                        Utils.showToast('显化句已更新', 'success');
-                    }
-                }
-            }
-
-            // 删除显化句
-            function deleteAffirmation(id) {
-                Utils.showConfirm('确定要删除这条显化句吗？', () => {
-                    const data = GardenData.load();
-                    data.affirmations = data.affirmations.filter(a => a.id != id);
-                    GardenData.save(data);
-                    renderAffirmations(document.querySelector('.category-btn.active')?.getAttribute('data-category') || 'all');
-                    Utils.showToast('显化句已删除', 'info');
+            add.addEventListener('click',addAff);
+            input.addEventListener('keypress',e=>e.key==='Enter'&&addAff());
+            nextAff.addEventListener('click',()=>render(document.querySelector('.category-btn.active').dataset.category||'all'));
+            document.getElementById('add-category').onclick=()=>{
+                const c=prompt('新分类');if(c){const d=GardenData.load();if(!d.categories.includes(c)){d.categories.push(c);GardenData.save(d);renderCats();Utils.showToast('分类已添加');}else Utils.showToast('已存在','warn');}}
+            };
+            document.getElementById('manage-categories').onclick=()=>{
+                const c=GardenData.get('categories');const s=prompt('每行一个分类',c.join('\n'));
+                if(s!==null){const ns=s.split('\n').map(x=>x.trim()).filter(Boolean);const d=GardenData.load();d.categories=ns;d.affirmations.forEach(a=>{if(!ns.includes(a.category))a.category=ns[0];});GardenData.save(d);renderCats();render();Utils.showToast('分类已更新');}
+            };
+            function renderCats(){
+                const c=GardenData.get('categories');
+                const active=document.querySelector('.category-btn.active')?.dataset.category||'all';
+                catContainer.innerHTML='';
+                const allBtn=document.createElement('button');allBtn.className='category-btn px-3 py-1.5 bg-sage/10 text-sage rounded-full text-sm';allBtn.dataset.category='all';allBtn.textContent='全部';
+                catContainer.appendChild(allBtn);
+                c.forEach(cat=>{
+                    const btn=document.createElement('button');btn.className=`category-btn px-3 py-1.5 bg-sage/10 ${active===cat?'text-sage active':'text-earth hover:text-sage'} rounded-full text-sm`;btn.dataset.category=cat;btn.textContent=cat;
+                    catContainer.appendChild(btn);
+                    btn.onclick=()=>{document.querySelectorAll('.category-btn').forEach(x=>x.classList.remove('active'));btn.classList.add('active');render(cat);};
                 });
+                catContainer.appendChild(document.getElementById('add-category'));
+                catContainer.appendChild(document.getElementById('manage-categories'));
+                catSelect.innerHTML='';c.forEach(x=>{const o=document.createElement('option');o.value=x;o.textContent=x;catSelect.appendChild(o);});
             }
-
-            // 渲染分类按钮
-            function renderCategoryButtons() {
-                const categories = GardenData.get('categories') || [];
-                const activeCategory = document.querySelector('.category-btn.active')?.getAttribute('data-category') || 'all';
-                
-                // 清空现有分类按钮（保留全部和操作按钮）
-                const allBtn = categoryContainer.querySelector('[data-category="all"]');
-                const addBtn = document.getElementById('add-category');
-                const manageBtn = document.getElementById('manage-categories');
-                
-                categoryContainer.innerHTML = '';
-                categoryContainer.appendChild(allBtn);
-                
-                // 添加分类按钮
-                categories.forEach(cat => {
-                    const btn = document.createElement('button');
-                    btn.className = `category-btn px-3 py-1.5 bg-sage/10 text-sage rounded-full text-sm ${activeCategory === cat ? 'active' : 'text-earth hover:text-sage'} transition-all duration-300`;
-                    btn.setAttribute('data-category', cat);
-                    btn.textContent = cat;
-                    categoryContainer.appendChild(btn);
-                    
-                    btn.addEventListener('click', () => {
-                        document.querySelectorAll('.category-btn').forEach(b => b.classList.remove('active'));
-                        btn.classList.add('active');
-                        renderAffirmations(cat);
-                    });
-                });
-                
-                // 添加操作按钮
-                categoryContainer.appendChild(addBtn);
-                categoryContainer.appendChild(manageBtn);
-                
-                // 更新分类下拉框
-                categorySelect.innerHTML = '';
-                categories.forEach(cat => {
-                    const option = document.createElement('option');
-                    option.value = cat;
-                    option.textContent = cat;
-                    categorySelect.appendChild(option);
-                });
-            }
-
-            // 添加分类
-            document.getElementById('add-category').addEventListener('click', () => {
-                const newCat = prompt('输入新分类名称');
-                if (newCat && newCat.trim()) {
-                    const data = GardenData.load();
-                    if (!data.categories.includes(newCat.trim())) {
-                        data.categories.push(newCat.trim());
-                        GardenData.save(data);
-                        renderCategoryButtons();
-                        Utils.showToast('分类添加成功', 'success');
-                    } else {
-                        Utils.showToast('该分类已存在', 'warn');
-                    }
-                }
-            });
-
-            // 管理分类
-            document.getElementById('manage-categories').addEventListener('click', () => {
-                const categories = GardenData.get('categories') || [];
-                const catStr = categories.join('\n');
-                const newCatStr = prompt('编辑分类（每行一个）', catStr);
-                
-                if (newCatStr !== null) {
-                    const newCats = newCatStr.split('\n').map(c => c.trim()).filter(c => c);
-                    const uniqueCats = [...new Set(newCats)];
-                    
-                    const data = GardenData.load();
-                    data.categories = uniqueCats;
-                    
-                    // 更新显化句分类（移除不存在的分类）
-                    data.affirmations.forEach(aff => {
-                        if (!uniqueCats.includes(aff.category)) {
-                            aff.category = uniqueCats[0] || '未分类';
-                        }
-                    });
-                    
-                    GardenData.save(data);
-                    renderCategoryButtons();
-                    renderAffirmations();
-                    Utils.showToast('分类已更新', 'success');
-                }
-            });
-
-            // 绑定事件
-            addAffirmationBtn.addEventListener('click', addAffirmation);
-            newAffirmationInput.addEventListener('keypress', (e) => {
-                if (e.key === 'Enter') addAffirmation();
-            });
-            
-            nextAffirmationBtn.addEventListener('click', updateRandomAffirmation);
-            
-            // 初始化
-            renderCategoryButtons();
-            renderAffirmations();
+            renderCats();render();
         }
 
-        // 初始化愿景花园
-        function initVisionTab() {
-            const visionBoard = document.getElementById('vision-board');
-            const uploadImageInput = document.getElementById('upload-image');
-            const visionCategory = document.getElementById('vision-category');
-            const exportWordlessBtn = document.getElementById('export-wordless');
-            const emptyVision = document.getElementById('empty-vision');
+        function initVisionTab(){
+            const board=document.getElementById('vision-board');
+            const upload=document.getElementById('upload-image');
+            const cat=document.getElementById('vision-category');
+            const empty=document.getElementById('empty-vision');
+            function render(){
+                const data=GardenData.get('visionBoard')||[];
+                empty.style.display=data.length?'none':'flex';
+                board.innerHTML='';board.appendChild(empty);
+                data.forEach(item=>{
+                    const b=document.createElement('div');b.className='vision-block';
+                    b.style.gridColumnStart=item.x;b.style.gridRowStart=item.y;
+                    b.style.gridColumnEnd=item.x2;b.style.gridRowEnd=item.y2;
+                    b.innerHTML=`<img src="${item.url}"><div class="block-tag bg-sage/80 text-white">${item.category}</div><div class="del-block">×</div>`;
+                    board.appendChild(b);
+                    b.querySelector('.del-block').onclick=()=>{
+                        const d=GardenData.load();d.visionBoard=d.visionBoard.filter(x=>x.id!==item.id);GardenData.save(d);render();Utils.showToast('已删除','info');
+                    };
+                });
+            }
+            upload.addEventListener('change',e=>{
+                Array.from(e.target.files).forEach(file=>{
+                    Utils.fileToBase64(file,url=>{
+                        const d=GardenData.load();
+                        d.visionBoard.push({
+                            id:Utils.generateId(),
+                            url,category:cat.value,
+                            x:1,y:1,x2:3,y2:4
+                        });
+                        GardenData.save(d);render();Utils.showToast('已添加');
+                    });
+                });
+            });
+            render();
+        }
 
-            // 渲染愿景花园
-            function renderVisionBoard() {
-                const visionData = GardenData.get('visionBoard') || [];
-                
-                // 显示/隐藏空状态
-                if (visionData.length === 0) {
-                    emptyVision.style.display = 'flex';
-                } else {
-                    emptyVision.style.display = 'none';
-                }
-                
-                // 清空现有内容
-                visionBoard.innerHTML = '';
-                visionBoard.appendChild(emptyVision);
-                
-                // 添加愿景块
+        function initSubsTab(){
+            const list=document.getElementById('subs-list');
+            const title=document.getElementById('sub-title');
+            const url=document.getElementById('sub-url');
+            const cat=document.getElementById('sub-category');
+            const add=document.getElementById('add-sub');
+            function render(){
+                const data=GardenData.get('subs')||[];
+                list.innerHTML='';
+                data.forEach(item=>{
+                    const card=document.createElement('div');card.className='sub-card bg-white/60 rounded-xl p-4 soft-shadow';
+                    card.innerHTML=`
+                        <h3 class="text-earth font-medium mb-2">${item.title}</h3>
+                        <div class="sub-player-wrap"><iframe src="https://player.bilibili.com/player.html?bvid=${item.url.split('BV')[1]||''}&high_quality=1" allowfullscreen></iframe></div>
+                        <p class="text-xs text-sage mt-2">${item.category}</p>
+                        <button class="mt-2 text-xs text-red-400" onclick="delSub('${item.id}')">删除</button>
+                    `;
+                    list.appendChild(card);
+                });
+            }
+            add.onclick=()=>{
+                if(!title.value||!url.value){Utils.showToast('请填写完整','warn');return;}
+                const d=GardenData.load();
+                d.subs.push({id:Utils.generateId(),title:title.value,url:url.value,category:cat.value});
+                GardenData.save(d);title.value='';url.value='';render();Utils.showToast('添加成功');
+            };
+            cat.innerHTML='';GardenData.get('subCategories').forEach(c=>{const o=document.createElement('option');o.value=c;o.textContent=c;cat.appendChild(o);});
+            render();
+        }
+
+        function delSub(id){
+            Utils.showConfirm('确定删除？',()=>{const d=GardenData.load();d.subs=d.subs.filter(x=>x.id!==id);GardenData.save(d);initSubsTab();Utils.showToast('已删除','info');});
+        }
+
+        function initGratitudeTab(){
+            const list=document.getElementById('gratitude-list');
+            const content=document.getElementById('gratitude-content');
+            const mood=document.getElementById('gratitude-mood');
+            const save=document.getElementById('save-gratitude');
+            function render(){
+                const data=GardenData.get('gratitude')||[];
+                list.innerHTML='';
+                data.slice().reverse().forEach(item=>{
+                    const div=document.createElement('div');div.className='bg-white/60 rounded-xl p-4 soft-shadow fade-in';
+                    div.innerHTML=`
+                        <div class="flex items-center gap-2 mb-2">
+                            <div class="w-8 h-8 rounded-full bg-sage/20 flex items-center justify-center text-sage"><i class="fa fa-user"></i></div>
+                            <div>
+                                <p class="text-earth font-medium">我</p>
+                                <p class="text-xs text-sage">${new Date(item.time).toLocaleString()}</p>
+                            </div>
+                        </div>
+                        <p class="text-earth mb-2">${item.content}</p>
+                        <p class="text-sm">${item.mood}</p>
+                    `;
+                    list.appendChild(div);
+                });
+            }
+            save.onclick=()=>{
+                const c=content.value.trim();if(!c){Utils.showToast('请输入内容','warn');return;}
+                const d=GardenData.load();
+                d.gratitude.push({content:c,mood:mood.value,time:new Date().toISOString()});
+                GardenData.save(d);content.value='';render();Utils.showToast('已发布');
+            };
+            render();
+        }
+
+        function initKnowledgeTab(){
+            const board=document.getElementById('knowledge-board');
+            const empty=document.getElementById('empty-knowledge');
+            const add=document.getElementById('add-knowledge');
+            function render(){
+                const data=GardenData.get('knowledgeBoard')||[];
+                empty.style.display=data.length?'none':'flex';
+                board.innerHTML='';board.appendChild(empty);
+                data.forEach(item=>{
+                    const b=document.createElement('div');b.className='vision-block';
+                    b.style.gridColumnStart=item.x;b.style.gridRowStart=item.y;
+                    b.style.gridColumnEnd=item.x2;b.style.gridRowEnd=item.y2;
+                    b.innerHTML=`<div class="text-block bg-white/80 p-2 text-earth text-sm">${item.text}</div><div class="del-block">×</div>`;
+                    board.appendChild(b);
+                    b.querySelector('.del-block').onclick=()=>{
+                        const d=GardenData.load();d.knowledgeBoard=d.knowledgeBoard.filter(x=>x.id!==item.id);GardenData.save(d);render();Utils.showToast('已删除','info');
+                    };
+                });
+            }
+            add.onclick=()=>{
+                const t=prompt('输入知识卡片内容');if(!t)return;
+                const d=GardenData.load();
+                d.knowledgeBoard.push({
+                    id:Utils.generateId(),text:t,
+                    x:1,y:1,x2:4,y2:3
+                });
+                GardenData.save(d);render();Utils.showToast('已添加');
+            };
+            render();
+        }
+
+        function initFloatCounter(){
+            const btn=document.getElementById('fc-btn');
+            const count=document.getElementById('fc-count');
+            btn.onclick=()=>{
+                const d=GardenData.load();d.counter.today++;d.counter.total++;GardenData.save(d);updateFloatCounter();Utils.showToast('计数+1');
+            };
+            updateFloatCounter();
+        }
+
+        function updateFloatCounter(){
+            const c=GardenData.get('counter');
+            document.getElementById('fc-count').textContent=c.today;
+            document.getElementById('fc-goal').textContent=c.goal;
+            document.getElementById('
