@@ -1,0 +1,1775 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>我的显化花园</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdn.jsdelivr.net/npm/font-awesome@4.7.0/css/font-awesome.min.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/interactjs/dist/interact.min.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500;600&family=Noto+Serif+SC:wght@400;500;600&display=swap" rel="stylesheet">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        cream: '#faf7f2', sage: '#a8b5a0', sageLight: '#d4dccf',
+                        gold: '#c9b896', goldLight: '#e6ddd0', paper: '#fdfcf9', earth: '#8b7d6b',
+                    },
+                    fontFamily: {
+                        serif: ['Playfair Display', 'Noto Serif SC', 'serif'],
+                        sans: ['Inter', 'system-ui', 'sans-serif'],
+                    },
+                }
+            }
+        }
+    </script>
+    <style>
+        body{font-family:'Noto Serif SC','Playfair Display',serif}
+        .paper-texture{background-image:url("data:image/svg+xml,%3Csvg width='100' height='100' viewBox='0 0 100 100' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.6' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.02'/%3E%3C/svg%3E")}
+        .soft-shadow{box-shadow:0 2px 10px rgba(168,181,160,.08),0 8px 24px rgba(168,181,160,.06)}
+        .leaf-float{animation:float 8s ease-in-out infinite}
+        .leaf-float-delay-1{animation:float 10s ease-in-out infinite;animation-delay:2s}
+        .leaf-float-delay-2{animation:float 9s ease-in-out infinite;animation-delay:4s}
+        .leaf-float-delay-3{animation:float 11s ease-in-out infinite;animation-delay:6s}
+        @keyframes float{0%,100%{transform:translateY(0) rotate(0deg);opacity:.15}50%{transform:translateY(-15px) rotate(8deg);opacity:.25}}
+        .bounce-click{transition:transform .2s cubic-bezier(.34,1.56,.64,1)}
+        .bounce-click:active{transform:scale(.92)}
+        .fade-in{animation:fadeIn .5s ease-out}
+        @keyframes fadeIn{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:translateY(0)}}
+        .slide-up{animation:slideUp .3s ease-out}
+        @keyframes slideUp{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:translateY(0)}}
+        .counter-ring{width:200px;height:200px;border-radius:50%;background:conic-gradient(#a8b5a0 var(--pct,0%),#d4dccf var(--pct,0%));display:flex;align-items:center;justify-content:center;position:relative}
+        .counter-ring::before{content:'';position:absolute;width:170px;height:170px;border-radius:50%;background:#fdfcf9}
+        .counter-ring .inner{position:relative;z-index:1;text-align:center}
+        .timer-ring{width:240px;height:240px;border-radius:50%;background:conic-gradient(#a8b5a0 var(--timer-pct,100%),#d4dccf var(--timer-pct,100%));display:flex;align-items:center;justify-content:center;position:relative}
+        .timer-ring::before{content:'';position:absolute;width:210px;height:210px;border-radius:50%;background:#fdfcf9}
+        .timer-ring .inner{position:relative;z-index:1;text-align:center}
+        .breathing{animation:breathe 4s ease-in-out infinite}
+        @keyframes breathe{0%,100%{transform:scale(1);opacity:.8}50%{transform:scale(1.05);opacity:1}}
+        .vision-board{display:grid;grid-template-columns:repeat(8,1fr);grid-auto-rows:80px;grid-auto-flow:dense;gap:8px;background:linear-gradient(135deg,rgba(168,181,160,.06),rgba(212,220,207,.1));border-radius:16px;padding:12px;min-height:800px;position:relative}
+        .vision-board::before{content:'';position:absolute;inset:0;border-radius:16px;background-image:url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M30 5 C32 15 38 20 45 22 C38 24 32 29 30 40 C28 29 22 24 15 22 C22 20 28 15 30 5Z' fill='rgba(168,181,160,0.03)'/%3E%3C/svg%3E");pointer-events:none;z-index:0}
+        .vision-block{border-radius:10px;overflow:hidden;position:relative;animation:blockDrop .4s cubic-bezier(.34,1.56,.64,1) forwards;opacity:0;cursor:grab;transition:box-shadow .2s,transform .2s;user-select:none;-webkit-user-select:none;-webkit-user-drag:none;z-index:1}
+        .vision-block:active{cursor:grabbing}
+        .vision-block:hover{box-shadow:0 6px 24px rgba(0,0,0,.12);transform:translateY(-1px)}
+        .vision-block.dragging{opacity:.6;z-index:100;box-shadow:0 12px 40px rgba(0,0,0,.25);transform:scale(1.03)}
+        @keyframes blockDrop{0%{opacity:0;transform:translateY(-20px)}70%{opacity:1;transform:translateY(2px)}100%{opacity:1;transform:translateY(0)}}
+        .vision-block img{width:100%;height:100%;object-fit:cover;display:block;pointer-events:none;user-select:none;-webkit-user-drag:none}
+        .vision-block .block-tag{position:absolute;top:4px;left:4px;padding:2px 8px;border-radius:6px;font-size:10px;opacity:0;transition:opacity .2s;z-index:2;font-weight:500}
+        .vision-block:hover .block-tag{opacity:1}
+        .vision-block .del-block{position:absolute;top:4px;right:4px;width:20px;height:20px;border-radius:50%;background:rgba(0,0,0,.35);color:#fff;display:flex;align-items:center;justify-content:center;font-size:9px;opacity:0;transition:opacity .2s;cursor:pointer;z-index:2}
+        .vision-block:hover .del-block{opacity:1}
+        .vision-block .del-block:hover{background:rgba(220,38,38,.7)}
+        .vision-block .resize-handle{position:absolute;bottom:0;right:0;width:24px;height:24px;cursor:nwse-resize;opacity:0;transition:opacity .2s;z-index:2;background:linear-gradient(135deg,transparent 50%,rgba(255,255,255,.3) 50%)}
+        .vision-block:hover .resize-handle{opacity:1}
+        .vision-block .resize-handle::after{content:'';position:absolute;bottom:3px;right:3px;width:8px;height:8px;border-right:2px solid rgba(255,255,255,.7);border-bottom:2px solid rgba(255,255,255,.7)}
+        .vision-block .resize-right{position:absolute;top:0;right:0;width:6px;height:100%;cursor:ew-resize;opacity:0;transition:opacity .2s;z-index:2}
+        .vision-block:hover .resize-right{opacity:1;background:linear-gradient(90deg,transparent,rgba(255,255,255,.15))}
+        .vision-block .resize-bottom{position:absolute;bottom:0;left:0;width:100%;height:6px;cursor:ns-resize;opacity:0;transition:opacity .2s;z-index:2}
+        .vision-block:hover .resize-bottom{opacity:1;background:linear-gradient(180deg,transparent,rgba(255,255,255,.15))}
+        .vision-block .img-overlay{position:absolute;bottom:0;left:0;right:0;top:0;display:flex;align-items:flex-end;padding:12px 10px 8px;background:linear-gradient(transparent 40%,rgba(0,0,0,.4));color:#fff;font-family:'Playfair Display','Noto Serif SC',serif;line-height:1.3;word-break:break-word;cursor:pointer;z-index:1;text-shadow:0 1px 4px rgba(0,0,0,.5)}
+        .text-block{display:flex;align-items:center;justify-content:center;text-align:center;padding:10px;word-break:break-word;line-height:1.4;letter-spacing:.5px;height:100%;min-height:100%}
+        .text-block .aff-ref{position:absolute;bottom:3px;right:6px;font-size:8px;opacity:.5;color:inherit}
+        .vision-board .leaf-deco{position:absolute;font-size:14px;opacity:.08;pointer-events:none;z-index:0;animation:leafSway 6s ease-in-out infinite}
+        @keyframes leafSway{0%,100%{transform:rotate(0deg) translateY(0)}50%{transform:rotate(8deg) translateY(-3px)}}
+        .noise-btn.active{background:rgba(168,181,160,.25)!important;color:#8b7d6b!important;font-weight:500}
+        @media(max-width:640px){.vision-board{grid-template-columns:repeat(4,1fr);grid-auto-rows:60px}}
+        .aff-card{background:rgba(168,181,160,.06);border:1px solid rgba(168,181,160,.12);border-radius:10px;padding:10px 12px;display:flex;justify-content:space-between;align-items:center;gap:8px;transition:all .2s}
+        .aff-card:hover{background:rgba(168,181,160,.12);border-color:rgba(168,181,160,.2)}
+        .aff-card.dragging{opacity:.55;transform:scale(.98)}
+        .aff-card.drag-over{border-color:rgba(168,181,160,.55);box-shadow:0 0 0 2px rgba(168,181,160,.2) inset}
+        .vine-border{position:relative}
+        .vine-border::before{content:'';position:absolute;top:-10px;left:-10px;right:-10px;bottom:-10px;border:1px solid rgba(168,181,160,.2);border-radius:24px;pointer-events:none}
+        .sub-card{transition:all .3s ease}
+        .sub-card:hover{transform:translateY(-3px);box-shadow:0 8px 20px rgba(168,181,160,.12)}
+        .confetti{position:fixed;width:8px;height:8px;border-radius:50%;opacity:0;animation:confetti-fall 4s ease-out forwards}
+        @keyframes confetti-fall{0%{transform:translateY(-100vh) rotate(0deg);opacity:1}100%{transform:translateY(100vh) rotate(720deg);opacity:0}}
+        .toast-container{position:fixed;top:20px;right:20px;z-index:9999;display:flex;flex-direction:column;gap:8px}
+        .toast{padding:12px 20px;border-radius:12px;color:#fff;font-size:14px;animation:toastIn .3s ease-out,toastOut .3s ease-in 2.7s forwards;box-shadow:0 4px 12px rgba(0,0,0,.15);max-width:320px}
+        .toast.success{background:linear-gradient(135deg,#a8b5a0,#8b9d82)}
+        .toast.info{background:linear-gradient(135deg,#c9b896,#b5a47e)}
+        .toast.warn{background:linear-gradient(135deg,#e8a87c,#d4915a)}
+        @keyframes toastIn{from{opacity:0;transform:translateX(40px)}to{opacity:1;transform:translateX(0)}}
+        @keyframes toastOut{from{opacity:1}to{opacity:0;transform:translateY(-10px)}}
+        .modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:9000;display:flex;align-items:center;justify-content:center;padding:16px;animation:fadeIn .2s ease-out}
+        .modal-box{background:#fdfcf9;border-radius:20px;padding:28px;max-width:420px;width:100%;box-shadow:0 20px 60px rgba(0,0,0,.2);animation:slideUp .3s ease-out}
+        .tab-btn{position:relative}
+        .tab-btn.active::after{content:'';position:absolute;bottom:-4px;left:50%;transform:translateX(-50%);width:30px;height:3px;background:#a8b5a0;border-radius:2px}
+        ::-webkit-scrollbar{width:6px}
+        ::-webkit-scrollbar-track{background:transparent}
+        ::-webkit-scrollbar-thumb{background:#d4dccf;border-radius:3px}
+        ::-webkit-scrollbar-thumb:hover{background:#a8b5a0}
+        .pulse-ring{position:absolute;border-radius:50%;border:2px solid #a8b5a0;animation:pulseRing .6s ease-out forwards;pointer-events:none}
+        @keyframes pulseRing{0%{width:100%;height:100%;opacity:.8}100%{width:160%;height:160%;opacity:0}}
+        .aff-progress{height:4px;border-radius:2px;background:#d4dccf;overflow:hidden;margin-top:6px}
+        .aff-progress-bar{height:100%;border-radius:2px;transition:width .3s}
+        .aff-card.selected{background:rgba(168,181,160,.18);border-color:rgba(168,181,160,.35)}
+        .mini-player{position:fixed;bottom:20px;left:20px;z-index:8000;background:#fdfcf9;border-radius:12px;box-shadow:0 4px 20px rgba(0,0,0,.12);overflow:hidden;transition:all .3s}
+        .mini-player.expanded{width:320px;height:180px}
+        .mini-player.collapsed{width:48px;height:48px;border-radius:50%;cursor:pointer}
+        .mini-player.collapsed:hover{transform:scale(1.1)}
+        .mini-player iframe{width:100%;height:130px;border:none;border-radius:8px}
+        .color-shift{animation:blockDrop .4s cubic-bezier(.34,1.56,.64,1) forwards,colorShift 12s ease-in-out .4s infinite}
+        @keyframes colorShift{0%,100%{filter:hue-rotate(0deg)}50%{filter:hue-rotate(30deg)}}
+        .float-counter{position:fixed;top:20px;right:20px;z-index:7000;background:#fdfcf9;border-radius:16px;box-shadow:0 4px 20px rgba(0,0,0,.1);padding:12px 16px;user-select:none;transition:box-shadow .2s}
+        .float-counter .fc-panel{display:none;margin-top:10px;padding-top:10px;border-top:1px solid rgba(168,181,160,.15)}
+        .float-counter.expanded .fc-panel{display:block}
+        .float-counter:hover{box-shadow:0 8px 30px rgba(0,0,0,.15)}
+        .float-counter .fc-count{font-size:28px;font-weight:700;color:#8b7d6b}
+        .float-counter .fc-label{font-size:10px;color:#a8b5a0}
+        .float-counter .fc-btn{width:36px;height:36px;border-radius:50%;background:#a8b5a0;color:#fff;border:none;cursor:pointer;font-size:14px;display:flex;align-items:center;justify-content:center;transition:transform .15s}
+        .float-counter .fc-btn:active{transform:scale(.9)}
+        .float-counter .fc-expand{font-size:11px;color:#a8b5a0;cursor:pointer;margin-top:6px;text-align:center;padding:4px 0;border-radius:6px;transition:background .15s}
+        .float-counter .fc-expand:hover{background:rgba(168,181,160,.1);color:#8b7d6b}
+        .float-counter .fc-panel{margin-top:10px;padding-top:10px;border-top:1px solid rgba(168,181,160,.15)}
+        .float-counter .fc-panel button{display:block;width:100%;text-align:left;padding:4px 8px;border-radius:6px;font-size:11px;color:#8b7d6b;background:none;border:none;cursor:pointer}
+        .float-counter .fc-panel button:hover{background:rgba(168,181,160,.1)}
+        .float-counter .fc-stats{display:flex;gap:8px;margin-top:6px}
+        .float-counter .fc-stats span{font-size:10px;color:#a8b5a0}
+        .float-meditation{position:fixed;bottom:20px;left:20px;z-index:7000;background:#fdfcf9;border-radius:16px;box-shadow:0 4px 20px rgba(0,0,0,.1);padding:12px 16px;user-select:none;transition:box-shadow .2s}
+        .float-meditation:hover{box-shadow:0 8px 30px rgba(0,0,0,.15)}
+        .float-meditation .fm-panel{display:none;margin-top:10px;padding-top:10px;border-top:1px solid rgba(168,181,160,.15)}
+        .float-meditation.expanded .fm-panel{display:block}
+        .float-meditation .fm-time{font-size:24px;font-weight:700;color:#8b7d6b;font-family:'Playfair Display','Noto Serif SC',serif}
+        .float-meditation .fm-label{font-size:10px;color:#a8b5a0}
+        .float-meditation .fm-btn{width:36px;height:36px;border-radius:50%;background:#a8b5a0;color:#fff;border:none;cursor:pointer;font-size:14px;display:flex;align-items:center;justify-content:center;transition:transform .15s}
+        .float-meditation .fm-btn:active{transform:scale(.9)}
+        .float-meditation .fm-expand{font-size:11px;color:#a8b5a0;cursor:pointer;margin-top:6px;text-align:center;padding:4px 0;border-radius:6px;transition:background .15s}
+        .float-meditation .fm-expand:hover{background:rgba(168,181,160,.1);color:#8b7d6b}
+        .float-meditation button.fm-ctrl{padding:4px 10px;border-radius:8px;font-size:11px;border:none;cursor:pointer;transition:background .15s}
+        .float-meditation .fm-noise-btn{padding:3px 8px;border-radius:6px;font-size:10px;border:none;cursor:pointer;background:rgba(168,181,160,.1);color:#8b7d6b;transition:all .15s}
+        .float-meditation .fm-noise-btn.active{background:rgba(168,181,160,.25);color:#5b6d53;font-weight:500}
+        .theme-btn{width:28px;height:28px;border-radius:50%;border:2px solid transparent;cursor:pointer;transition:all .2s}
+        .theme-btn.active{border-color:#8b7d6b;box-shadow:0 0 0 2px rgba(139,125,107,.3)}
+        .theme-bar{position:fixed;bottom:20px;right:20px;z-index:7001;display:flex;gap:6px;background:#fdfcf9;padding:8px 12px;border-radius:20px;box-shadow:0 2px 12px rgba(0,0,0,.08)}
+        .sub-player-wrap{margin-top:8px;border-radius:8px;overflow:hidden;background:#000}
+        .sub-player-wrap iframe{width:100%;height:180px;border:none}
+        .hero-banner-wrap{position:relative;z-index:10;width:100vw;left:50%;transform:translateX(-50%);padding:0;margin:0 0 14px}
+        .hero-banner{position:relative;width:100%;aspect-ratio:8/1;border-radius:0;overflow:hidden;background:linear-gradient(135deg,rgba(168,181,160,.55),rgba(212,220,207,.65),rgba(201,184,150,.55));border-top:1px solid rgba(168,181,160,.2);border-bottom:1px solid rgba(168,181,160,.2)}
+        .hero-banner img{width:100%;height:100%;object-fit:cover;display:block}
+        .hero-banner .hero-actions{position:absolute;right:10px;bottom:10px;display:flex;gap:8px;z-index:2}
+        .hero-banner .hero-btn{padding:6px 10px;border-radius:999px;font-size:12px;line-height:1;background:rgba(0,0,0,.35);color:#fff;border:1px solid rgba(255,255,255,.25);cursor:pointer}
+        .hero-banner .hero-btn:hover{background:rgba(0,0,0,.48)}
+        .swatch-grid{display:grid;grid-template-columns:repeat(8,minmax(0,1fr));gap:8px}
+        .swatch-btn{width:100%;aspect-ratio:1/1;border-radius:8px;border:2px solid transparent;cursor:pointer;transition:transform .15s,border-color .15s,box-shadow .15s}
+        .swatch-btn:hover{transform:translateY(-1px)}
+        .swatch-btn.active{border-color:#8b7d6b;box-shadow:0 0 0 2px rgba(139,125,107,.25)}
+    </style>
+</head>
+<body class="bg-cream paper-texture min-h-screen overflow-x-hidden">
+    <div class="fixed inset-0 pointer-events-none z-0">
+        <div class="absolute top-16 left-8 text-sage leaf-float text-3xl"><i class="fa fa-leaf"></i></div>
+        <div class="absolute top-32 right-12 text-sage leaf-float-delay-1 text-2xl"><i class="fa fa-leaf"></i></div>
+        <div class="absolute bottom-40 left-16 text-sage leaf-float-delay-2 text-xl"><i class="fa fa-envira"></i></div>
+        <div class="absolute bottom-24 right-20 text-sage leaf-float-delay-3 text-2xl"><i class="fa fa-leaf"></i></div>
+        <div class="absolute top-1/2 left-4 text-sage leaf-float text-lg"><i class="fa fa-leaf"></i></div>
+        <div class="absolute top-1/3 right-8 text-sage leaf-float-delay-1 text-lg"><i class="fa fa-envira"></i></div>
+    </div>
+    <div class="toast-container" id="toast-container"></div>
+    <div class="hero-banner-wrap">
+        <div id="hero-banner" class="hero-banner soft-shadow">
+            <img id="hero-banner-img" alt="花园顶部图片" class="hidden">
+            <div class="hero-actions">
+                <label class="hero-btn">更换图片<input type="file" id="hero-image-input" accept="image/*" class="hidden"></label>
+                <button id="hero-image-reset" class="hero-btn">恢复默认</button>
+            </div>
+        </div>
+    </div>
+    <header class="py-6 md:py-8 text-center relative z-10">
+        <h1 class="text-3xl md:text-5xl font-serif text-earth mb-3 tracking-wide">我的显化花园</h1>
+        <p class="text-sage italic text-base md:text-lg font-light">"The universe is conspiring in your favor."</p>
+    </header>
+    <nav class="max-w-6xl mx-auto px-4 mb-3 md:mb-4 relative z-10">
+        <div class="flex flex-wrap justify-center gap-2 md:gap-4">
+            <button class="tab-btn active bg-paper soft-shadow px-3 md:px-4 py-1.5 md:py-2 rounded-lg border border-sage/10 text-sage transition-all duration-300 text-xs md:text-sm" data-tab="counter"><i class="fa fa-heart-o mr-1"></i>显化中心</button>
+            <button class="tab-btn bg-paper soft-shadow px-3 md:px-4 py-1.5 md:py-2 rounded-lg border border-sage/10 text-earth hover:text-sage transition-all duration-300 text-xs md:text-sm" data-tab="vision"><i class="fa fa-picture-o mr-1"></i>愿景花园</button>
+            <button class="tab-btn bg-paper soft-shadow px-3 md:px-4 py-1.5 md:py-2 rounded-lg border border-sage/10 text-earth hover:text-sage transition-all duration-300 text-xs md:text-sm" data-tab="subs"><i class="fa fa-headphones mr-1"></i>酥饼仓库</button>
+            <button class="tab-btn bg-paper soft-shadow px-3 md:px-4 py-1.5 md:py-2 rounded-lg border border-sage/10 text-earth hover:text-sage transition-all duration-300 text-xs md:text-sm" data-tab="gratitude"><i class="fa fa-book mr-1"></i>感恩日记</button>
+            <button class="tab-btn bg-paper soft-shadow px-3 md:px-4 py-1.5 md:py-2 rounded-lg border border-sage/10 text-earth hover:text-sage transition-all duration-300 text-xs md:text-sm" data-tab="knowledge"><i class="fa fa-bookmark-o mr-1"></i>显化知识库</button>
+        </div>
+    </nav>
+    <!-- 浮动计数器 -->
+    <div id="float-counter" class="float-counter">
+        <div class="flex items-center gap-3">
+            <button id="fc-btn" class="fc-btn"><i class="fa fa-heart"></i></button>
+            <div>
+                <div class="fc-count" id="fc-count">0</div>
+                <div class="fc-label">今日 / <span id="fc-goal">108</span></div>
+            </div>
+        </div>
+        <div class="fc-expand" id="fc-expand">▼ 更多</div>
+        <div class="fc-panel" id="fc-panel">
+            <div class="mb-2">
+                <label class="text-[10px] text-sage block mb-1">点击累积到</label>
+                <select id="fc-aff-select" class="w-full px-2 py-1 rounded-md border border-sage/20 bg-white/70 text-xs text-earth focus:outline-none focus:border-sage">
+                    <option value="">不指定A句（仅总计）</option>
+                </select>
+            </div>
+            <div class="mb-2">
+                <label class="text-[10px] text-sage block mb-1">浮动框大小: <span id="fc-size-val">100</span>%</label>
+                <input type="range" id="fc-size" min="80" max="150" value="100" class="w-full accent-sage" style="height:4px">
+            </div>
+            <div class="fc-stats"><span>本周: <b id="fc-week">0</b></span><span>总计: <b id="fc-total">0</b></span></div>
+            <button id="fc-set-goal"><i class="fa fa-bullseye mr-1"></i>设定目标</button>
+            <button id="fc-reset"><i class="fa fa-refresh mr-1"></i>重置今日</button>
+        </div>
+    </div>
+    <!-- 浮动静心时刻 -->
+    <div id="float-meditation" class="float-meditation">
+        <div class="flex items-center gap-3">
+            <button id="fm-btn" class="fm-btn"><i class="fa fa-moon-o"></i></button>
+            <div>
+                <div class="fm-time" id="fm-time">05:00</div>
+                <div class="fm-label" id="fm-label">准备开始</div>
+            </div>
+        </div>
+        <div class="fm-expand" id="fm-expand">▼ 更多</div>
+        <div class="fm-panel" id="fm-panel">
+            <div class="mb-2">
+                <label class="text-[10px] text-sage block mb-1">浮动框大小: <span id="fm-size-val">100</span>%</label>
+                <input type="range" id="fm-size" min="80" max="150" value="100" class="w-full accent-sage" style="height:4px">
+            </div>
+            <div class="flex flex-wrap gap-1 mb-2">
+                <button class="fm-noise-btn" data-noise="rain"><i class="fa fa-tint"></i> 雨</button>
+                <button class="fm-noise-btn" data-noise="ocean"><i class="fa fa-water"></i> 海</button>
+                <button class="fm-noise-btn" data-noise="forest"><i class="fa fa-tree"></i> 林</button>
+                <button class="fm-noise-btn" data-noise="fire"><i class="fa fa-fire"></i> 火</button>
+                <button class="fm-noise-btn" data-noise="wind"><i class="fa fa-wind"></i> 风</button>
+            </div>
+            <div class="flex items-center gap-1 mb-2">
+                <i class="fa fa-volume-down text-sage text-xs"></i>
+                <input type="range" id="fm-volume" min="0" max="100" value="40" class="w-20 accent-sage" style="height:4px">
+                <i class="fa fa-volume-up text-sage text-xs"></i>
+            </div>
+            <div class="flex flex-wrap gap-1 mb-2">
+                <button class="fm-ctrl" style="background:rgba(168,181,160,.15);color:#8b7d6b" data-time="300">5分</button>
+                <button class="fm-ctrl" style="background:rgba(168,181,160,.15);color:#8b7d6b" data-time="600">10分</button>
+                <button class="fm-ctrl" style="background:rgba(168,181,160,.15);color:#8b7d6b" data-time="900">15分</button>
+                <button class="fm-ctrl" style="background:rgba(168,181,160,.15);color:#8b7d6b" data-time="1800">30分</button>
+            </div>
+            <div class="flex gap-2">
+                <button id="fm-start" class="fm-ctrl" style="background:#a8b5a0;color:#fff"><i class="fa fa-play"></i> 开始</button>
+                <button id="fm-pause" class="fm-ctrl" style="background:rgba(201,184,150,.5);color:#fff"><i class="fa fa-pause"></i></button>
+                <button id="fm-reset" class="fm-ctrl" style="background:rgba(139,125,107,.3);color:#fff"><i class="fa fa-refresh"></i></button>
+            </div>
+        </div>
+    </div>
+    <div class="theme-bar" id="theme-bar">
+        <button class="theme-btn active" data-theme="sage" style="background:#a8b5a0" title="鼠尾草"></button>
+        <button class="theme-btn" data-theme="rose" style="background:#c9a0a0" title="玫瑰"></button>
+        <button class="theme-btn" data-theme="ocean" style="background:#8ba8b5" title="海洋"></button>
+        <button class="theme-btn" data-theme="sunset" style="background:#c9a870" title="日落"></button>
+        <button class="theme-btn" data-theme="lavender" style="background:#a8a0c9" title="薰衣草"></button>
+        <button class="theme-btn" data-theme="forest" style="background:#6b8f6b" title="森林"></button>
+    </div>
+    <main class="max-w-6xl mx-auto px-3 md:px-4 pb-20 relative z-10">
+        <!-- 显化中心 -->
+        <section id="counter" class="tab-content active fade-in">
+            <div class="bg-paper soft-shadow rounded-2xl p-6 md:p-10 vine-border">
+                <div class="bg-sageLight/20 rounded-xl p-5 md:p-6 mb-6 md:mb-8 text-center">
+                    <p class="text-sm text-sage mb-3">✨ 今日显化句 ✨</p>
+                    <p id="random-affirmation" class="text-lg md:text-xl font-serif text-earth italic min-h-[60px] flex items-center justify-center leading-relaxed">我值得拥有所有美好的事物</p>
+                    <button id="next-affirmation" class="mt-4 px-4 py-1.5 bg-white rounded-full text-sm text-sage hover:text-earth transition-colors"><i class="fa fa-refresh mr-1"></i>换一条</button>
+                </div>
+                <div class="flex flex-wrap gap-2 mb-4 items-center" id="category-container">
+                    <button class="category-btn active px-3 py-1.5 bg-sage/10 text-sage rounded-full text-sm" data-category="all">全部</button>
+                    <button id="add-category" class="px-3 py-1.5 bg-sageLight/20 text-earth rounded-full text-sm hover:bg-sageLight/30 transition-colors"><i class="fa fa-plus mr-1"></i>添加分类</button>
+                    <button id="manage-categories" class="px-3 py-1.5 bg-sageLight/20 text-earth rounded-full text-sm hover:bg-sageLight/30 transition-colors"><i class="fa fa-cog mr-1"></i>管理分类</button>
+                </div>
+                <div class="flex flex-col sm:flex-row gap-2 mb-4">
+                    <input type="text" id="new-affirmation" placeholder="输入你的显化句..." class="flex-1 px-4 py-2.5 rounded-lg border border-sage/20 focus:outline-none focus:border-sage bg-white/50 text-sm">
+                    <div class="flex gap-2">
+                        <select id="affirmation-category" class="px-3 py-2.5 rounded-lg border border-sage/20 focus:outline-none focus:border-sage bg-white/50 text-sm">
+                            <option value="财富">财富</option><option value="事业">事业</option><option value="健康">健康</option><option value="关系">关系</option><option value="自我成长">自我成长</option>
+                        </select>
+                        <button id="add-affirmation" class="px-4 py-2.5 bg-sage text-white rounded-lg hover:bg-sage/90 transition-colors text-sm whitespace-nowrap">添加</button>
+                    </div>
+                </div>
+                <div id="affirmations-list" class="grid grid-cols-1 md:grid-cols-2 gap-3 max-h-[500px] overflow-y-auto pr-1"></div>
+            </div>
+        </section>
+        <!-- 愿景花园 -->
+        <section id="vision" class="tab-content hidden fade-in">
+            <div class="bg-paper soft-shadow rounded-2xl p-4 md:p-8 vine-border" style="max-width:100%">
+                <div class="flex flex-wrap justify-between items-center mb-4 md:mb-6 gap-3">
+                    <h2 class="text-xl md:text-2xl font-serif text-earth">我的愿景花园</h2>
+                    <div class="flex flex-wrap gap-2 items-center">
+                        <select id="vision-category" class="px-2 py-1.5 rounded-lg border border-sage/20 focus:outline-none focus:border-sage bg-white/50 text-sm">
+                            <option value="财富">财富</option><option value="事业">事业</option><option value="健康">健康</option><option value="关系">关系</option><option value="自我成长">自我成长</option>
+                        </select>
+                        <label class="px-3 py-1.5 bg-sage text-white rounded-lg cursor-pointer hover:bg-sage/90 transition-colors text-sm"><i class="fa fa-upload mr-1"></i>添加图片<input type="file" id="upload-image" accept="image/*" class="hidden" multiple></label>
+                        <button id="export-wordless" class="px-3 py-1.5 bg-sageLight/30 text-earth rounded-lg hover:bg-sageLight/50 transition-colors text-sm"><i class="fa fa-external-link mr-1"></i>导出无字板</button>
+                    </div>
+                </div>
+                <div id="vision-board" class="vision-board min-h-[600px]" style="width:100%">
+                    <div id="empty-vision" class="flex flex-col items-center justify-center text-sage py-16" style="grid-column:1/-1">
+                        <i class="fa fa-picture-o text-5xl mb-4 opacity-30"></i>
+                        <p class="text-lg">上传你的愿景图片，让梦想可视化</p>
+                        <p class="text-sm mt-2 opacity-70">显化句会自动出现在这里</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+        <!-- 显化知识库 -->
+        <section id="knowledge" class="tab-content hidden fade-in">
+            <div class="bg-paper soft-shadow rounded-2xl p-4 md:p-8 vine-border" style="max-width:100%">
+                <div class="flex flex-wrap justify-between items-center mb-4 md:mb-6 gap-3">
+                    <h2 class="text-xl md:text-2xl font-serif text-earth">📚 显化知识库</h2>
+                    <div class="flex flex-wrap gap-2 items-center">
+                        <select id="knowledge-category" class="px-2 py-1.5 rounded-lg border border-sage/20 focus:outline-none focus:border-sage bg-white/50 text-sm">
+                            <option value="all">全部</option>
+                        </select>
+                        <button id="add-knowledge" class="px-3 py-1.5 bg-sage text-white rounded-lg hover:bg-sage/90 transition-colors text-sm"><i class="fa fa-plus mr-1"></i>添加知识卡片</button>
+                    </div>
+                </div>
+                <div id="knowledge-board" class="vision-board min-h-[600px]" style="width:100%">
+                    <div id="empty-knowledge" class="flex flex-col items-center justify-center text-sage py-16" style="grid-column:1/-1">
+                        <i class="fa fa-lightbulb-o text-5xl mb-4 opacity-30"></i>
+                        <p class="text-lg">把你学到的显化知识放在这里</p>
+                        <p class="text-sm mt-2 opacity-70">支持自由排列与来源链接</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+        <!-- 酥饼仓库 -->
+        <section id="subs" class="tab-content hidden fade-in">
+            <div class="bg-paper soft-shadow rounded-2xl p-4 md:p-8 vine-border">
+                <div class="flex justify-between items-center mb-4 md:mb-6"><h2 class="text-xl md:text-2xl font-serif text-earth">🍪 酥饼仓库</h2></div>
+                <div class="bg-sageLight/10 rounded-xl p-4 md:p-5 mb-6">
+                    <h3 class="text-base md:text-lg font-serif text-earth mb-3">添加新酥饼</h3>
+                    <div class="grid grid-cols-1 md:grid-cols-12 gap-2 md:gap-3">
+                        <input type="text" id="sub-title" placeholder="酥饼名称" class="md:col-span-4 px-4 py-2.5 rounded-lg border border-sage/20 focus:outline-none focus:border-sage bg-white/50 text-sm">
+                        <input type="url" id="sub-url" placeholder="B站链接" class="md:col-span-5 px-4 py-2.5 rounded-lg border border-sage/20 focus:outline-none focus:border-sage bg-white/50 text-sm">
+                        <select id="sub-category" class="md:col-span-2 px-3 py-2.5 rounded-lg border border-sage/20 focus:outline-none focus:border-sage bg-white/50 text-sm">
+                        </select>
+                        <button id="add-sub" class="md:col-span-1 px-4 py-2.5 bg-sage text-white rounded-lg hover:bg-sage/90 transition-colors text-sm">添加</button>
+                    </div>
+                </div>
+                <div class="flex flex-wrap gap-2 mb-4" id="sub-category-container">
+                    <button class="sub-category-btn active px-3 py-1.5 bg-sage/10 text-sage rounded-full text-sm" data-subcat="all">全部</button>
+                    <button id="add-sub-category" class="hidden"></button>
+                </div>
+                <div id="subs-list" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4"></div>
+            </div>
+        </section>
+        <!-- 感恩日记 -->
+        <section id="gratitude" class="tab-content hidden fade-in">
+            <div class="bg-paper soft-shadow rounded-2xl p-4 md:p-8 vine-border">
+                <div class="flex justify-between items-center mb-4 md:mb-6">
+                    <h2 class="text-xl md:text-2xl font-serif text-earth">📜 感恩日记</h2>
+                </div>
+                <!-- 发帖输入框 -->
+                <div class="bg-white/60 rounded-xl p-4 mb-6 soft-shadow">
+                    <div class="flex items-start gap-3">
+                        <div class="w-10 h-10 rounded-full bg-sage/20 flex items-center justify-center text-sage flex-shrink-0"><i class="fa fa-user"></i></div>
+                        <div class="flex-1">
+                            <textarea id="gratitude-content" rows="3" class="w-full p-3 rounded-lg border border-sage/15 focus:outline-none focus:border-sage bg-white/70 resize-none text-sm placeholder-sage/40" placeholder="今天感恩什么？写下你的心情..."></textarea>
+                            <div class="flex items-center justify-between mt-2">
+                                <div class="flex gap-2 flex-wrap">
+                                    <select id="gratitude-mood" class="px-2 py-1 rounded-lg border border-sage/15 focus:outline-none focus:border-sage bg-white/50 text-xs text-sage">
+                                        <option value="😊">😊 开心</option><option value="😌">😌 平静</option><option value="🥰">🥰 感动</option><option value="💪">💪 充实</option><option value="🙏">🙏 感恩</option><option value="✨">✨ 喜悦</option>
+                                    </select>
+                                    <div id="gratitude-tags" class="flex flex-wrap gap-1"></div>
+                                </div>
+                                <button id="save-gratitude" class="px-4 py-1.5 bg-sage text-white rounded-lg hover:bg-sage/90 transition-colors text-sm"><i class="fa fa-paper-plane mr-1"></i>发布</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="flex flex-wrap gap-2 mb-4" id="gratitude-filter">
+                    <button class="gra-filter-btn active px-3 py-1.5 bg-sage/10 text-sage rounded-full text-sm" data-filter="all">全部</button>
+                </div>
+                <div id="gratitude-list" class="space-y-4 max-h-[600px] md:max-h-[700px] overflow-y-auto pr-1"></div>
+            </div>
+        </section>
+    </main>
+    <footer class="max-w-6xl mx-auto px-4 pb-8 relative z-10">
+        <div class="flex flex-wrap justify-center gap-3 mb-6">
+            <button onclick="exportData()" class="px-4 py-2 bg-sageLight/30 text-earth rounded-lg hover:bg-sageLight/50 transition-colors text-sm"><i class="fa fa-download mr-1"></i>导出数据</button>
+            <label class="px-4 py-2 bg-sageLight/30 text-earth rounded-lg hover:bg-sageLight/50 transition-colors text-sm cursor-pointer"><i class="fa fa-upload mr-1"></i>导入数据<input type="file" accept=".json" class="hidden" onchange="importData(event)"></label>
+            <button onclick="showConfirm('确定清空所有数据？此操作不可恢复！',()=>{resetAllData()})" class="px-4 py-2 bg-red-50 text-red-400 rounded-lg hover:bg-red-100 transition-colors text-sm"><i class="fa fa-trash-o mr-1"></i>清空数据</button>
+        </div>
+        <p class="text-center text-sage/50 text-xs italic">"What you seek is seeking you." — Rumi</p>
+    </footer>
+    <!-- 迷你播放器 -->
+    <div id="mini-player" class="mini-player collapsed hidden" style="display:none !important">
+        <div class="flex items-center gap-2 p-2" id="player-expanded" style="display:none">
+            <div class="flex-1">
+                <input type="text" id="player-url" placeholder="粘贴B站/YouTube链接..." class="w-full px-2 py-1 rounded border border-sage/20 text-xs focus:outline-none focus:border-sage bg-white/50">
+                <div class="mt-1" id="player-frame-wrap"></div>
+                <div class="flex items-center gap-2 mt-1">
+                    <button id="player-count-btn" class="bounce-click px-2 py-1 bg-sage text-white rounded text-xs">+1念诵</button>
+                    <button id="player-minimize" class="px-2 py-1 bg-sageLight/30 text-earth rounded text-xs"><i class="fa fa-compress"></i></button>
+                </div>
+            </div>
+        </div>
+        <div id="player-collapsed-inner" class="flex items-center justify-center w-full h-full">
+            <i class="fa fa-play text-sage"></i>
+        </div>
+    </div>
+    <script>
+    // ===== 工具函数 =====
+    function E(s){const d=document.createElement('div');d.textContent=s;return d.innerHTML}
+
+    // Toast 通知
+    function toast(msg,type='success'){
+        const c=document.getElementById('toast-container');
+        const t=document.createElement('div');
+        t.className=`toast ${type}`;t.textContent=msg;
+        c.appendChild(t);setTimeout(()=>t.remove(),3000);
+    }
+
+    // 自定义确认弹窗（替代 confirm）
+    function showConfirm(msg,cb){
+        const o=document.createElement('div');o.className='modal-overlay';
+        o.innerHTML=`<div class="modal-box"><p class="text-earth text-base mb-6">${E(msg)}</p><div class="flex justify-end gap-3"><button class="js-cancel px-5 py-2 bg-sageLight/30 text-earth rounded-lg text-sm">取消</button><button class="js-ok px-5 py-2 bg-sage text-white rounded-lg text-sm">确定</button></div></div>`;
+        o.querySelector('.js-cancel').onclick=()=>o.remove();
+        o.querySelector('.js-ok').onclick=()=>{o.remove();cb()};
+        o.onclick=e=>{if(e.target===o)o.remove()};
+        document.body.appendChild(o);
+    }
+
+    // 自定义输入弹窗（替代 prompt）
+    function showPrompt(msg,defaultVal,cb){
+        const o=document.createElement('div');o.className='modal-overlay';
+        o.innerHTML=`<div class="modal-box"><p class="text-earth text-base mb-4">${E(msg)}</p><input type="text" class="js-input w-full px-4 py-2.5 rounded-lg border border-sage/20 focus:outline-none focus:border-sage bg-white/50 text-sm" value="${E(defaultVal||'')}"><div class="flex justify-end gap-3 mt-4"><button class="js-cancel px-5 py-2 bg-sageLight/30 text-earth rounded-lg text-sm">取消</button><button class="js-ok px-5 py-2 bg-sage text-white rounded-lg text-sm">确定</button></div></div>`;
+        const inp=o.querySelector('.js-input');
+        o.querySelector('.js-cancel').onclick=()=>o.remove();
+        o.querySelector('.js-ok').onclick=()=>{const v=inp.value.trim();o.remove();cb(v)};
+        inp.onkeydown=e=>{if(e.key==='Enter'){const v=inp.value.trim();o.remove();cb(v)}};
+        o.onclick=e=>{if(e.target===o)o.remove()};
+        document.body.appendChild(o);
+        setTimeout(()=>inp.focus(),100);
+    }
+
+    // 数据导出/导入
+    function exportData(){
+        const d=localStorage.getItem('manifestation-garden')||'{}';
+        const blob=new Blob([d],{type:'application/json'});
+        const a=document.createElement('a');
+        a.href=URL.createObjectURL(blob);a.download=`显化花园_${new Date().toISOString().slice(0,10)}.json`;
+        a.click();URL.revokeObjectURL(a.href);toast('数据已导出');
+    }
+    function importData(e){
+        const f=e.target.files[0];if(!f)return;
+        const r=new FileReader();r.onload=ev=>{
+            try{
+                const parsed=JSON.parse(ev.target.result);
+                data={...data,...parsed};
+                saveData();loadData();refreshAllViews();
+                toast('数据已导入');
+            }
+            catch(err){toast('文件格式错误','warn')}
+        };r.readAsText(f);
+    }
+
+    function refreshAllViews(){
+        initTheme();
+        renderCategories();renderAffirmations();updateRandomAffirmation();
+        renderVisions();
+        renderSubCategories();renderSubs();
+        renderGratitudeTags();renderGratitude();
+        renderKnowledgeCategories();renderKnowledge();
+        initHeroBanner();
+    }
+
+    function resetAllData(){
+        localStorage.removeItem('manifestation-garden');
+        data={
+            counter:{today:0,week:0,total:0,lastDate:'',lastWeek:'',goal:108},
+            visions:defaultVisions.map((v,i)=>({id:Date.now()+i,...v})),affirmations:[],categories:['财富','事业','健康','关系','自我成长'],
+            hiddenAffVisionIds:[],knowledge:[],subs:[],gratitude:[],selectedAff:null,theme:'sage',heroImage:''
+        };
+        saveData();loadData();refreshAllViews();
+        toast('数据已清空');
+    }
+
+    // ===== 全局数据 =====
+    let data={
+        counter:{today:0,week:0,total:0,lastDate:'',lastWeek:'',goal:108},
+        visions:[],affirmations:[],categories:['财富','事业','健康','关系','自我成长'],
+        hiddenAffVisionIds:[],
+        knowledge:[],
+        subs:[],
+        gratitude:[],
+        selectedAff:null,
+        heroImage:'',
+        floatUI:{
+            counter:{x:null,y:null,scale:1},
+            meditation:{x:null,y:null,scale:1}
+        }
+    };
+    const defaultVisions=[
+        {type:'image',src:"https://picsum.photos/id/1067/400/300",category:'财富',cs:3,rs:2},
+        {type:'image',src:"https://picsum.photos/id/180/400/400",category:'事业',cs:2,rs:2},
+        {type:'image',src:"https://picsum.photos/id/1062/400/300",category:'健康',cs:3,rs:2},
+        {type:'image',src:"https://picsum.photos/id/1036/400/400",category:'关系',cs:2,rs:2}
+    ];
+    let timerInterval,timerSeconds=300,timerTotal=300,timerRunning=false,currentGratitudeId=null;
+    const themes={
+        sage:{accent:'#a8b5a0',accentLight:'#d4dccf',bg:'#faf7f2',paper:'#fdfcf9',earth:'#8b7d6b'},
+        rose:{accent:'#c9a0a0',accentLight:'#e6d0d0',bg:'#faf2f2',paper:'#fdf9f9',earth:'#8b6b6b'},
+        ocean:{accent:'#8ba8b5',accentLight:'#cfdce6',bg:'#f2f7fa',paper:'#f9fcfd',earth:'#6b7d8b'},
+        sunset:{accent:'#c9a870',accentLight:'#e6d8c0',bg:'#faf6f0',paper:'#fdfcf8',earth:'#8b7d5b'},
+        lavender:{accent:'#a8a0c9',accentLight:'#d0cde6',bg:'#f5f2fa',paper:'#faf9fd',earth:'#7b6b8b'},
+        forest:{accent:'#6b8f6b',accentLight:'#c0d4c0',bg:'#f2f7f2',paper:'#f9fdf9',earth:'#5b7d5b'}
+    };
+    const MORANDI_COLORS=['#d7c8b6','#c8c0b7','#bfc8be','#c7d0d8','#d2c7d6','#d8c9bf','#c7d2c3','#d9d4ca'];
+    const DEFAULT_HERO_IMAGE='https://picsum.photos/id/1018/2400/300';
+
+    // ===== 初始化 =====
+    document.addEventListener('DOMContentLoaded',()=>{
+        loadData();initTabs();initTheme();initCounter();initVisionBoard();initKnowledge();initAffirmations();initSubs();initGratitude();initTimer();initHeroBanner();updateRandomAffirmation();
+        if(data.visions.length===0){
+            defaultVisions.forEach((v,i)=>{data.visions.push({id:Date.now()+i,...v})});
+            saveData();renderVisions();
+        }
+    });
+
+    function saveData(){localStorage.setItem('manifestation-garden',JSON.stringify(data))}
+    function loadData(){
+        const s=localStorage.getItem('manifestation-garden');
+        if(s){try{data={...data,...JSON.parse(s)}}catch(e){}}
+        if(!data.counter)data.counter={today:0,week:0,total:0,lastDate:'',lastWeek:'',goal:108};
+        if(!data.counter.goal)data.counter.goal=108;
+        if(!data.selectedAff)data.selectedAff=null;
+        if(!data.theme)data.theme='sage';
+        if(!Array.isArray(data.hiddenAffVisionIds))data.hiddenAffVisionIds=[];
+        if(!Array.isArray(data.knowledge))data.knowledge=[];
+        if(!Array.isArray(data.subs))data.subs=[];
+        if(typeof data.heroImage!=='string')data.heroImage='';
+        if(!data.floatUI)data.floatUI={counter:{x:null,y:null,scale:1},meditation:{x:null,y:null,scale:1}};
+        if(!data.floatUI.counter)data.floatUI.counter={x:null,y:null,scale:1};
+        if(!data.floatUI.meditation)data.floatUI.meditation={x:null,y:null,scale:1};
+        if(typeof data.floatUI.counter.scale!=='number')data.floatUI.counter.scale=1;
+        if(typeof data.floatUI.meditation.scale!=='number')data.floatUI.meditation.scale=1;
+        // migrate affirmations to have count/goal
+        if(data.affirmations){
+            data.affirmations=data.affirmations.map(a=>{if(!a.count)a.count=0;if(!a.goal)a.goal=108;return a});
+        }
+        // migrate old vision format
+        if(data.visions&&data.visions.length){
+            data.visions=data.visions.map(v=>{
+                if(!v.type){v.type=v.src?'image':'text';if(v.type==='text'&&!v.text)v.text=v.caption||''}
+                if(!v.cs){v.cs=v.span||2;v.rs=v.span||2;delete v.span;delete v.x;delete v.y;delete v.rotation;delete v.width}
+                if(!v.category&&v.caption){v.category=v.caption;delete v.caption}
+                if(v.caption)delete v.caption;
+                return v;
+            });
+        }
+        const today=new Date().toDateString();
+        if(data.counter.lastDate!==today){data.counter.today=0;data.counter.lastDate=today}
+        const week=getWeekNumber(new Date());
+        if(data.counter.lastWeek!==week){data.counter.week=0;data.counter.lastWeek=week}
+        saveData();updateCounterDisplay();
+    }
+
+    // ===== 顶部图片 =====
+    function initHeroBanner(){
+        const img=document.getElementById('hero-banner-img');
+        const input=document.getElementById('hero-image-input');
+        const reset=document.getElementById('hero-image-reset');
+        if(!img||!input||!reset)return;
+        const apply=()=>{
+            img.src=data.heroImage||DEFAULT_HERO_IMAGE;
+            img.classList.remove('hidden');
+        };
+        input.onchange=e=>{
+            const file=e.target.files&&e.target.files[0];
+            if(!file)return;
+            const reader=new FileReader();
+            reader.onload=ev=>{data.heroImage=ev.target.result||'';saveData();apply();toast('顶部图片已更换')};
+            reader.readAsDataURL(file);
+            e.target.value='';
+        };
+        reset.onclick=()=>{data.heroImage='';saveData();apply();toast('已恢复默认背景')};
+        apply();
+    }
+    function getWeekNumber(d){
+        const dt=new Date(Date.UTC(d.getFullYear(),d.getMonth(),d.getDate()));
+        const day=dt.getUTCDay()||7;dt.setUTCDate(dt.getUTCDate()+4-day);
+        const ys=new Date(Date.UTC(dt.getUTCFullYear(),0,1));
+        return Math.ceil((((dt-ys)/86400000)+1)/7);
+    }
+
+    // ===== 主题切换 =====
+    function initTheme(){
+        if(!data.theme)data.theme='sage';
+        applyTheme(data.theme);
+        document.querySelectorAll('.theme-btn').forEach(btn=>{
+            if(btn.dataset.theme===data.theme)btn.classList.add('active');
+            else btn.classList.remove('active');
+            btn.onclick=()=>{
+                data.theme=btn.dataset.theme;saveData();applyTheme(data.theme);
+                document.querySelectorAll('.theme-btn').forEach(b=>b.classList.remove('active'));
+                btn.classList.add('active');
+            };
+        });
+    }
+    function applyTheme(name){
+        const t=themes[name]||themes.sage;
+        document.documentElement.style.setProperty('--accent',t.accent);
+        document.documentElement.style.setProperty('--accent-light',t.accentLight);
+        document.documentElement.style.setProperty('--bg',t.bg);
+        document.documentElement.style.setProperty('--paper',t.paper);
+        document.documentElement.style.setProperty('--earth',t.earth);
+        document.body.style.background=t.bg;
+        // Update Tailwind-dependent elements
+        document.querySelectorAll('.bg-paper').forEach(el=>el.style.background=t.paper);
+        document.querySelectorAll('.text-earth').forEach(el=>el.style.color=t.earth);
+        document.querySelectorAll('.bg-sage').forEach(el=>el.style.background=t.accent);
+        document.querySelectorAll('.text-sage').forEach(el=>el.style.color=t.accent);
+        document.querySelectorAll('.bg-sageLight\\/30').forEach(el=>el.style.background=t.accentLight+'4D');
+        // Float counter & mini player bg
+        const fc=document.getElementById('float-counter');if(fc)fc.style.background=t.paper;
+        const mp=document.getElementById('mini-player');if(mp)mp.style.background=t.paper;
+    }
+
+    // ===== 标签页 =====
+    function initTabs(){
+        const btns=document.querySelectorAll('.tab-btn'),contents=document.querySelectorAll('.tab-content');
+        btns.forEach(btn=>{btn.addEventListener('click',()=>{
+            const id=btn.dataset.tab;
+            btns.forEach(b=>{b.classList.remove('active','border-sage','text-sage');b.classList.add('text-earth')});
+            contents.forEach(c=>c.classList.add('hidden'));
+            btn.classList.add('active','border-sage','text-sage');btn.classList.remove('text-earth');
+            const sec=document.getElementById(id);sec.classList.remove('hidden');sec.classList.remove('fade-in');void sec.offsetWidth;sec.classList.add('fade-in');
+            if(id==='vision')renderVisions();
+            if(id==='knowledge')renderKnowledge();
+        })});
+    }
+
+    // ===== 计数功能 =====
+    let selectedAffId=null;
+
+    function renderCounterAffOptions(){
+        const sel=document.getElementById('fc-aff-select');
+        if(!sel)return;
+        sel.innerHTML='<option value="">不指定A句（仅总计）</option>';
+        data.affirmations.forEach(a=>{
+            const o=document.createElement('option');
+            o.value=String(a.id);
+            o.textContent=(a.text||'').slice(0,28)||'未命名A句';
+            sel.appendChild(o);
+        });
+        sel.value=selectedAffId?String(selectedAffId):'';
+    }
+
+    function initCounter(){
+        const fc=document.getElementById('float-counter');
+        const fcBtn=document.getElementById('fc-btn');
+        const fcExpand=document.getElementById('fc-expand');
+        if(data.floatUI&&data.floatUI.counter){
+            const s=Math.max(.8,Math.min(1.5,Number(data.floatUI.counter.scale)||1));
+            fc.style.zoom=String(s);
+            if(Number.isFinite(data.floatUI.counter.x)&&Number.isFinite(data.floatUI.counter.y)){
+                fc.style.left=data.floatUI.counter.x+'px';
+                fc.style.top=data.floatUI.counter.y+'px';
+                fc.style.right='auto';
+            }
+            const fcSize=document.getElementById('fc-size');
+            const fcSizeVal=document.getElementById('fc-size-val');
+            if(fcSize&&fcSizeVal){
+                fcSize.value=String(Math.round(s*100));
+                fcSizeVal.textContent=String(Math.round(s*100));
+                fcSize.oninput=()=>{
+                    const pct=Math.max(80,Math.min(150,Number(fcSize.value)||100));
+                    const ns=pct/100;
+                    fc.style.zoom=String(ns);
+                    fcSizeVal.textContent=String(pct);
+                    data.floatUI.counter.scale=ns;saveData();
+                };
+            }
+        }
+        selectedAffId=data.selectedAff||null;
+        renderCounterAffOptions();
+        const affSel=document.getElementById('fc-aff-select');
+        if(affSel){
+            affSel.onchange=()=>{
+                const v=affSel.value?Number(affSel.value):null;
+                if(v)selectAffirmation(v);
+                else{selectedAffId=null;data.selectedAff=null;saveData();document.querySelectorAll('.aff-card').forEach(c=>c.classList.remove('selected'));updateCounterDisplay()}
+            };
+        }
+        // Float counter drag (only when not on buttons)
+        let fcDrag=false,fcX=0,fcY=0;
+        fc.addEventListener('pointerdown',e=>{
+            if(e.target.closest('.fc-btn')||e.target.closest('.fc-expand')||e.target.closest('.fc-panel'))return;
+            fcDrag=true;fcX=e.clientX-fc.offsetLeft;fcY=e.clientY-fc.offsetTop;
+            document.addEventListener('pointermove',fcMoveHandler);
+            document.addEventListener('pointerup',fcUpHandler);
+        });
+        function fcMoveHandler(e){if(!fcDrag)return;fc.style.left=(e.clientX-fcX)+'px';fc.style.top=(e.clientY-fcY)+'px';fc.style.right='auto'}
+        function fcUpHandler(){
+            fcDrag=false;
+            if(data.floatUI&&data.floatUI.counter){
+                data.floatUI.counter.x=fc.offsetLeft;
+                data.floatUI.counter.y=fc.offsetTop;
+                saveData();
+            }
+            document.removeEventListener('pointermove',fcMoveHandler);document.removeEventListener('pointerup',fcUpHandler)
+        }
+        // Expand/collapse
+        fcExpand.onclick=()=>{
+            fc.classList.toggle('expanded');
+            fcExpand.textContent=fc.classList.contains('expanded')?'▲ 收起':'▼ 更多';
+        };
+        // Count button
+        fcBtn.onclick=()=>{
+            data.counter.today++;data.counter.week++;data.counter.total++;
+            if(selectedAffId){
+                const aff=data.affirmations.find(a=>a.id===selectedAffId);
+                if(aff){aff.count++;saveData();renderAffirmations()}
+            }
+            saveData();updateCounterDisplay();playClickSound();
+            fcBtn.style.transform='scale(.85)';setTimeout(()=>fcBtn.style.transform='',150);
+            if(data.counter.total%100===0)showCelebration();
+            if(data.counter.today===data.counter.goal)toast('🎉 今日目标达成！');
+        };
+        // Long press to set goal
+        let pressTimer;
+        fcBtn.addEventListener('pointerdown',()=>{pressTimer=setTimeout(()=>{
+            if(selectedAffId){
+                const aff=data.affirmations.find(a=>a.id===selectedAffId);
+                if(aff)return showPrompt('设定此A句目标：',aff.goal,v=>{if(v&&+v>0){aff.goal=+v;saveData();renderAffirmations();updateCounterDisplay();toast(`目标已设为 ${v} 次`)}});
+            }
+            showPrompt('设定每日目标次数：',data.counter.goal,v=>{if(v&&+v>0){data.counter.goal=+v;saveData();updateCounterDisplay();toast(`目标已设为 ${v} 次`)}});
+        },600)});
+        fcBtn.addEventListener('pointerup',()=>clearTimeout(pressTimer));
+        fcBtn.addEventListener('pointerleave',()=>clearTimeout(pressTimer));
+        // Panel buttons
+        document.getElementById('fc-set-goal').onclick=()=>{
+            if(selectedAffId){
+                const aff=data.affirmations.find(a=>a.id===selectedAffId);
+                if(aff)return showPrompt('设定此A句目标：',aff.goal,v=>{if(v&&+v>0){aff.goal=+v;saveData();renderAffirmations();updateCounterDisplay();toast(`目标已设为 ${v} 次`)}});
+            }
+            showPrompt('设定每日目标次数：',data.counter.goal,v=>{if(v&&+v>0){data.counter.goal=+v;saveData();updateCounterDisplay();toast(`目标已设为 ${v} 次`)}});
+        };
+        document.getElementById('fc-reset').onclick=()=>showConfirm('确定重置今日计数？',()=>{data.counter.today=0;saveData();updateCounterDisplay();toast('今日计数已重置')});
+    }
+    function selectAffirmation(id){
+        selectedAffId=id;data.selectedAff=id;saveData();
+        document.querySelectorAll('.aff-card').forEach(c=>c.classList.remove('selected'));
+        const el=document.querySelector(`.aff-card[data-aff-id="${id}"]`);
+        if(el)el.classList.add('selected');
+        const affSel=document.getElementById('fc-aff-select');
+        if(affSel)affSel.value=String(id);
+        updateCounterDisplay();
+    }
+    function updateCounterDisplay(){
+        const g=data.counter.goal||108;
+        const fc=document.getElementById('fc-count');
+        const fg=document.getElementById('fc-goal');
+        const fw=document.getElementById('fc-week');
+        const ft=document.getElementById('fc-total');
+        if(fc)fc.textContent=data.counter.today;
+        if(fg)fg.textContent=g;
+        if(fw)fw.textContent=data.counter.week;
+        if(ft)ft.textContent=data.counter.total;
+    }
+    function playClickSound(){
+        const a=new Audio('data:audio/wav;base64,UklGRnoGAABXQVZFZm10IBAAAAABAAEAQB8AAEAfAAABAAgAZGF0YQoGAACBhYqFbF1fdJivrJBhNjVgodDbq2EcBj+a2/LDciUFLIHO8tiJNwgZaLvt559NEAxQp+PwtmMcBjiR1/LMeSwFJHfH8N2QQAoUXrTp66hVFApGn+DyvmwhBSuBzvLZiTYIG2m98OScTgwOUarm7blmGgU7k9n1unEiBC13yO/eizEIHWq+8+OWT');
+        a.volume=0.2;a.play().catch(()=>{});
+    }
+    function showCelebration(){
+        for(let i=0;i<60;i++){setTimeout(()=>{
+            const el=document.createElement('div');el.className='confetti';
+            el.style.left=Math.random()*100+'vw';
+            el.style.background=['#a8b5a0','#d4dccf','#c9b896','#e6ddd0'][Math.floor(Math.random()*4)];
+            document.body.appendChild(el);setTimeout(()=>el.remove(),4000);
+        },i*30)}
+        setTimeout(()=>toast(`🌸 累计念诵 ${data.counter.total} 次！宇宙与你同频`),600);
+    }
+
+    // ===== 迷你播放器 =====
+    function initPlayer(){
+        const player=document.getElementById('mini-player');
+        const expanded=document.getElementById('player-expanded');
+        const collapsed=document.getElementById('player-collapsed-inner');
+        const urlInput=document.getElementById('player-url');
+        const frameWrap=document.getElementById('player-frame-wrap');
+        // Show player
+        player.classList.remove('hidden');
+        // Click collapsed to expand
+        collapsed.onclick=()=>{
+            player.classList.remove('collapsed');player.classList.add('expanded');
+            expanded.style.display='flex';collapsed.style.display='none';
+        };
+        document.getElementById('player-minimize').onclick=()=>{
+            player.classList.remove('expanded');player.classList.add('collapsed');
+            expanded.style.display='none';collapsed.style.display='flex';
+        };
+        // Load URL
+        urlInput.onkeydown=e=>{
+            if(e.key==='Enter'){
+                const url=urlInput.value.trim();if(!url)return;
+                let embedUrl='';
+                // Bilibili
+                const bvMatch=url.match(/BV[\w]+/);
+                if(bvMatch)embedUrl=`//player.bilibili.com/player.html?bvid=${bvMatch[0]}&autoplay=0`;
+                // YouTube
+                const ytMatch=url.match(/(?:youtube\.com\/watch\?v=|youtu\.be\/)([\w-]+)/);
+                if(ytMatch)embedUrl=`https://www.youtube.com/embed/${ytMatch[1]}`;
+                if(!embedUrl){const a=document.createElement('a');a.href=url;if(a.hostname){embedUrl=url}else return toast('不支持的链接格式','warn')}
+                frameWrap.innerHTML=`<iframe src="${E(embedUrl)}" allowfullscreen></iframe>`;
+            }
+        };
+        // Player count button
+        document.getElementById('player-count-btn').onclick=()=>{
+            data.counter.today++;data.counter.week++;data.counter.total++;
+            if(selectedAffId){const aff=data.affirmations.find(a=>a.id===selectedAffId);if(aff)aff.count++}
+            saveData();updateCounterDisplay();playClickSound();toast('+1 念诵');
+        };
+    }
+
+    // ===== 愿景板 =====
+    const catColors={'财富':'#c9b896','事业':'#8b9d82','健康':'#7a8d72','关系':'#b5a47e','自我成长':'#9aab8f'};
+    const textBlockColors=['#a8b5a0','#c9b896','#8b9d82','#b5a47e','#d4dccf','#7a8d72','#9aab8f','#b8c4a8'];
+    const MAX_COL=8;
+    const tagBg={'财富':'rgba(201,184,150,.85)','事业':'rgba(139,157,130,.85)','健康':'rgba(122,141,114,.85)','关系':'rgba(181,164,126,.85)','自我成长':'rgba(154,171,143,.85)'};
+
+    function getCatColor(cat){return catColors[cat]||textBlockColors[Math.floor(Math.random()*textBlockColors.length)]}
+    function getCatTagBg(cat){return tagBg[cat]||'rgba(168,181,160,.8)'}
+    function clamp(n,min,max){return Math.max(min,Math.min(max,n))}
+    function hexToRgb(hex){
+        if(!hex)return null;
+        const s=hex.replace('#','').trim();
+        if(s.length!==6)return null;
+        const r=parseInt(s.slice(0,2),16),g=parseInt(s.slice(2,4),16),b=parseInt(s.slice(4,6),16);
+        if(Number.isNaN(r)||Number.isNaN(g)||Number.isNaN(b))return null;
+        return {r,g,b};
+    }
+    function rgbaToHex(color){
+        const m=(color||'').match(/rgba?\((\d+)\s*,\s*(\d+)\s*,\s*(\d+)/i);
+        if(!m)return null;
+        return '#'+[m[1],m[2],m[3]].map(v=>Number(v).toString(16).padStart(2,'0')).join('');
+    }
+    function buildRgba(baseColor,opacity){
+        const rgb=hexToRgb(baseColor)||hexToRgb(getCatColor(''));
+        const o=clamp(Number(opacity||1),0.1,1);
+        return `rgba(${rgb.r},${rgb.g},${rgb.b},${o})`;
+    }
+    function getTextColorForBg(color){
+        const m=(color||'').match(/rgba?\((\d+)\s*,\s*(\d+)\s*,\s*(\d+)/i);
+        const rgb=m?{r:+m[1],g:+m[2],b:+m[3]}:hexToRgb(color);
+        if(!rgb)return '#fff';
+        const lum=(0.299*rgb.r+0.587*rgb.g+0.114*rgb.b)/255;
+        return lum>0.67?'#3f3a33':'#fff';
+    }
+    function ensureTextBlockVisual(v,cat){
+        if(!v.baseColor){
+            const fromRgba=rgbaToHex(v.color||'');
+            v.baseColor=fromRgba||(/^#([0-9a-fA-F]{6})$/.test(v.color||'')?v.color:getCatColor(cat));
+        }
+        if(typeof v.opacity!=='number')v.opacity=0.92;
+        v.opacity=clamp(v.opacity,0.1,1);
+        v.color=buildRgba(v.baseColor,v.opacity);
+    }
+
+    function getSpanFromRatio(w,h){
+        if(!w||!h)return{cs:2,rs:2};
+        const r=w/h;
+        if(r>2.5)return{cs:5,rs:2};      // 超宽横幅
+        if(r>1.8)return{cs:4,rs:2};      // 宽横长方形
+        if(r>1.3)return{cs:3,rs:2};      // 横长方形
+        if(r>0.85)return{cs:2,rs:2};      // 正方形
+        if(r>0.6)return{cs:2,rs:3};      // 竖长方形
+        if(r>0.4)return{cs:2,rs:4};      // 窄竖条
+        return{cs:2,rs:2};               // 默认正方形
+    }
+
+    function syncAffirmationsToVision(){
+        // Remove affirmation blocks whose source affirmation no longer exists
+        const affIds=new Set(data.affirmations.map(a=>a.id));
+        data.visions=data.visions.filter(v=>v.type!=='affirmation'||affIds.has(v.id));
+        // Add new affirmations that don't have a vision block yet
+        const existingAffIds=new Set(data.visions.filter(v=>v.type==='affirmation').map(v=>v.id));
+        const hiddenIds=new Set(data.hiddenAffVisionIds||[]);
+        data.affirmations.forEach(a=>{
+            if(hiddenIds.has(a.id))return;
+            if(existingAffIds.has(a.id)){
+                // Update text from source affirmation (user can still edit/delete the block)
+                const existing=data.visions.find(v=>v.id===a.id);
+                if(existing){existing.text=a.text;existing.category=a.category;ensureTextBlockVisual(existing,a.category)}
+                return;
+            }
+            const cs=a.text.length>12?3:2,rs=2;
+            const baseColor=getCatColor(a.category),opacity=.92;
+            data.visions.push({id:a.id,type:'affirmation',text:a.text,cs,rs,baseColor,opacity,color:buildRgba(baseColor,opacity),category:a.category});
+        });
+    }
+
+    function showTextEditModal(v){
+        const cat=v.category||'';
+        ensureTextBlockVisual(v,cat);
+        const opacityPct=Math.round((v.opacity||0.92)*100);
+        const o=document.createElement('div');o.className='modal-overlay';
+        o.innerHTML=`<div class="modal-box"><p class="text-earth text-base mb-3">编辑文字块</p><input type="text" class="js-input w-full px-4 py-2.5 rounded-lg border border-sage/20 focus:outline-none focus:border-sage bg-white/50 text-sm mb-3" value="${E(v.text)}"><div class="grid grid-cols-2 gap-3 mb-3"><div><label class="text-xs text-sage">字号: <span class="js-fs-val">${v.fontSize||13}</span>px</label><input type="range" class="js-fs w-full accent-sage" min="10" max="32" value="${v.fontSize||13}"></div><div><label class="text-xs text-sage">列宽: <span class="js-cs-val">${v.cs||2}</span></label><input type="range" class="js-cs w-full accent-sage" min="1" max="8" value="${v.cs||2}"></div></div><div class="mb-3"><label class="text-xs text-sage">行高: <span class="js-rs-val">${v.rs||2}</span></label><input type="range" class="js-rs w-full accent-sage" min="1" max="6" value="${v.rs||2}"></div><div class="grid grid-cols-2 gap-3 mb-3"><div><label class="text-xs text-sage">颜色</label><input type="color" class="js-color w-full h-10 rounded-lg border border-sage/20 bg-white/50" value="${E(v.baseColor||'#a8b5a0')}"></div><div><label class="text-xs text-sage">透明度: <span class="js-op-val">${opacityPct}</span>%</label><input type="range" class="js-op w-full accent-sage" min="10" max="100" value="${opacityPct}"></div></div><div class="flex justify-end gap-3 mt-4"><button class="js-cancel px-5 py-2 bg-sageLight/30 text-earth rounded-lg text-sm">取消</button><button class="js-ok px-5 py-2 bg-sage text-white rounded-lg text-sm">确定</button></div></div>`;
+        const inp=o.querySelector('.js-input');
+        const fsSlider=o.querySelector('.js-fs'),csSlider=o.querySelector('.js-cs'),rsSlider=o.querySelector('.js-rs');
+        const colorInput=o.querySelector('.js-color'),opSlider=o.querySelector('.js-op');
+        fsSlider.oninput=()=>o.querySelector('.js-fs-val').textContent=fsSlider.value;
+        csSlider.oninput=()=>o.querySelector('.js-cs-val').textContent=csSlider.value;
+        rsSlider.oninput=()=>o.querySelector('.js-rs-val').textContent=rsSlider.value;
+        opSlider.oninput=()=>o.querySelector('.js-op-val').textContent=opSlider.value;
+        o.querySelector('.js-cancel').onclick=()=>o.remove();
+        o.querySelector('.js-ok').onclick=()=>{
+            const txt=inp.value.trim();if(!txt){o.remove();return}
+            v.text=txt;v.fontSize=+fsSlider.value;v.cs=+csSlider.value;v.rs=+rsSlider.value;
+            v.baseColor=colorInput.value;v.opacity=clamp(+opSlider.value/100,0.1,1);v.color=buildRgba(v.baseColor,v.opacity);
+            saveData();o.remove();renderVisions();
+        };
+        inp.onkeydown=e=>{if(e.key==='Enter'){o.querySelector('.js-ok').click()}};
+        o.onclick=e=>{if(e.target===o)o.remove()};
+        document.body.appendChild(o);setTimeout(()=>inp.focus(),100);
+    }
+
+    function initVisionBoard(){
+        document.getElementById('upload-image').onchange=e=>{
+            const vcs=document.getElementById('vision-category');
+            const cat=vcs.value==='all'?(data.categories[0]||''):vcs.value;
+            Array.from(e.target.files).forEach((f,idx)=>{
+                const r=new FileReader();
+                r.onload=ev=>{
+                    const img=new Image();
+                    img.onload=()=>{
+                        const sp=getSpanFromRatio(img.naturalWidth,img.naturalHeight);
+                        data.visions.push({id:Date.now()+idx,type:'image',src:ev.target.result,category:cat,cs:sp.cs,rs:sp.rs});
+                        saveData();renderVisions();
+                    };
+                    img.onerror=()=>{
+                        data.visions.push({id:Date.now()+idx,type:'image',src:ev.target.result,category:cat,cs:2,rs:2});
+                        saveData();renderVisions();
+                    };
+                    img.src=ev.target.result;
+                };
+                r.readAsDataURL(f);
+            });
+            e.target.value='';
+        };
+
+        document.getElementById('export-wordless').onclick=()=>{
+            const imgs=data.visions.filter(v=>v.type==='image'&&v.src);
+            if(!imgs.length)return toast('没有图片可导出','warn');
+            const html=`<!DOCTYPE html><html lang="zh-CN"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0"><title>我的愿景板</title><style>*{margin:0;padding:0;box-sizing:border-box}body{background:#faf7f2;min-height:100vh;padding:20px;font-family:serif}.grid{display:grid;grid-template-columns:repeat(6,1fr);grid-auto-rows:minmax(80px,auto);grid-auto-flow:dense;gap:4px;max-width:900px;margin:0 auto}.grid img{width:100%;height:100%;object-fit:cover;border-radius:8px;display:block}@media(max-width:640px){.grid{grid-template-columns:repeat(4,1fr)}}</style></head><body><div class="grid">${imgs.map(v=>`<div style="grid-column:span ${v.cs||2};grid-row:span ${v.rs||2}"><img src="${v.src}"></div>`).join('')}</div></body></html>`;
+            const w=window.open('','_blank');w.document.write(html);w.document.close();
+        };
+        renderVisions();
+    }
+
+    let visionFilter='all';
+    function renderVisions(){
+        const board=document.getElementById('vision-board'),empty=document.getElementById('empty-vision');
+        board.querySelectorAll('.vision-block,.leaf-deco').forEach(c=>c.remove());
+        syncAffirmationsToVision();
+        // Add natural leaf decorations
+        const leafPositions=['2% 5%','15% 92%','85% 8%','92% 88%','50% 95%','8% 50%','78% 50%'];
+        const leafIcons=['🌿','🍃','🍀','🌱','🌿','🍃','🍀'];
+        leafPositions.forEach((pos,i)=>{
+            const leaf=document.createElement('span');
+            leaf.className='leaf-deco';
+            leaf.textContent=leafIcons[i];
+            leaf.style.top=pos.split(' ')[0];leaf.style.left=pos.split(' ')[1];
+            leaf.style.animationDelay=(i*1.5)+'s';
+            board.appendChild(leaf);
+        });
+        // Sync vision category dropdown
+        const vcs=document.getElementById('vision-category');
+        vcs.innerHTML='<option value="all">全部</option>';
+        data.categories.forEach(c=>{const o=document.createElement('option');o.value=c;o.innerText=c;vcs.appendChild(o)});
+        vcs.value=visionFilter;
+        vcs.onchange=()=>{visionFilter=vcs.value;renderVisions()};
+        // Filter visions
+        let visions=visionFilter==='all'?data.visions:data.visions.filter(v=>v.category===visionFilter);
+        if(!visions.length&&!data.visions.length){empty.classList.remove('hidden');empty.style.display='';return}
+        if(!visions.length){empty.classList.remove('hidden');empty.style.display='';empty.innerHTML=`<i class="fa fa-filter text-3xl mb-3 opacity-30"></i><p>该分类下暂无内容</p>`;return}
+        empty.classList.add('hidden');empty.style.display='none';
+        visions.forEach((v,i)=>{
+            const block=document.createElement('div');
+            block.className='vision-block soft-shadow';
+            block.dataset.id=v.id;
+            block.style.animationDelay=(i*0.04)+'s';
+            const cs=Math.min(MAX_COL,v.cs||2),rs=v.rs||2;
+            block.style.gridColumn=`span ${cs}`;
+            block.style.gridRow=`span ${rs}`;
+            const cat=v.category||'';
+            const tagHtml=cat?`<div class="block-tag" style="background:${getCatTagBg(cat)};color:#fff">${E(cat)}</div>`:'';
+            if(v.type==='text'||v.type==='affirmation'){
+                ensureTextBlockVisual(v,cat);
+                const bg=v.color||getCatColor(cat);
+                const fs=v.fontSize||13;
+                block.classList.add('text-block','color-shift');
+                block.style.animationDelay=(i*0.04)+'s,'+(i*0.04+0.4)+'s';
+                block.style.background=bg;block.style.color=getTextColorForBg(bg);block.style.fontSize=fs+'px';
+                block.innerHTML=`${v.type==='affirmation'?'<div class="aff-ref" style="top:3px;left:6px;bottom:auto;right:auto;font-size:9px;opacity:.7">✨ 显化句</div>':''}${tagHtml}<div style="flex:1;display:flex;align-items:center;justify-content:center;cursor:pointer" class="edit-text">${E(v.text||'')}</div><div class="del-block"><i class="fa fa-times"></i></div><div class="resize-right"></div><div class="resize-bottom"></div><div class="resize-handle"></div>`;
+                block.querySelector('.edit-text').onclick=()=>showTextEditModal(v);
+                block.querySelector('.del-block').onclick=e=>{
+                    e.stopPropagation();
+                    if(v.type==='affirmation')data.hiddenAffVisionIds=[...new Set([...(data.hiddenAffVisionIds||[]),v.id])];
+                    data.visions=data.visions.filter(x=>!(x.id===v.id&&x.type===v.type));
+                    saveData();renderVisions();
+                };
+            }else{
+                block.style.background='#fff';
+                const overlayFs=v.overlayFs||Math.max(12,Math.min(24,Math.round(16*(v.cs||2)/2)));
+                const overlayHtml=v.overlay?`<div class="img-overlay" style="font-size:${overlayFs}px">${E(v.overlay)}</div>`:'';
+                block.innerHTML=`${tagHtml}<img src="${E(v.src)}" onerror="this.src='data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><rect fill=%22%23d4dccf%22 width=%22100%22 height=%22100%22/><text x=%2250%22 y=%2255%22 text-anchor=%22middle%22 fill=%22%238b7d6b%22 font-size=%2214%22>🖼</text></svg>'">${overlayHtml}<div class="del-block"><i class="fa fa-times"></i></div><div class="resize-right"></div><div class="resize-bottom"></div><div class="resize-handle"></div>`;
+                // Click image to edit category or overlay text
+                block.onclick=e=>{
+                    if(e.target.closest('.del-block')||e.target.closest('.resize-handle')||e.target.closest('.resize-right')||e.target.closest('.resize-bottom')||e.target.closest('.block-tag')||e.target.closest('.img-overlay'))return;
+                    const cats=data.categories.map(c=>`<option value="${c}" ${c===cat?'selected':''}>${c}</option>`).join('');
+                    const o=document.createElement('div');o.className='modal-overlay';
+                    o.innerHTML=`<div class="modal-box"><p class="text-earth text-base mb-3">编辑图片</p><div class="mb-3"><label class="text-xs text-sage mb-1 block">分类</label><select class="js-sel w-full px-4 py-2.5 rounded-lg border border-sage/20 focus:outline-none focus:border-sage bg-white/50 text-sm">${cats}</select></div><div class="mb-3"><label class="text-xs text-sage mb-1 block">图片说明文字（白色艺术字覆盖）</label><input type="text" class="js-overlay w-full px-4 py-2.5 rounded-lg border border-sage/20 focus:outline-none focus:border-sage bg-white/50 text-sm" value="${E(v.overlay||'')}" placeholder="输入说明文字..."></div><div class="mb-3"><label class="text-xs text-sage">字体大小: <span class="js-ofs-val">${v.overlayFs||16}</span>px</label><input type="range" class="js-ofs w-full accent-sage" min="10" max="36" value="${v.overlayFs||16}"></div><div class="flex justify-end gap-3 mt-4"><button class="js-cancel px-5 py-2 bg-sageLight/30 text-earth rounded-lg text-sm">取消</button><button class="js-ok px-5 py-2 bg-sage text-white rounded-lg text-sm">确定</button></div></div>`;
+                    const ofsSlider=o.querySelector('.js-ofs');
+                    ofsSlider.oninput=()=>o.querySelector('.js-ofs-val').textContent=ofsSlider.value;
+                    o.querySelector('.js-cancel').onclick=()=>o.remove();
+                    o.querySelector('.js-ok').onclick=()=>{v.category=o.querySelector('.js-sel').value;v.overlay=o.querySelector('.js-overlay').value.trim();v.overlayFs=parseInt(ofsSlider.value);saveData();o.remove();renderVisions()};
+                    o.onclick=e=>{if(e.target===o)o.remove()};
+                    document.body.appendChild(o);
+                };
+                // Click overlay text to edit it directly (with font size)
+                const overlayEl=block.querySelector('.img-overlay');
+                if(overlayEl)overlayEl.onclick=e=>{e.stopPropagation();
+                    const cats=data.categories.map(c=>`<option value="${c}" ${c===cat?'selected':''}>${c}</option>`).join('');
+                    const o=document.createElement('div');o.className='modal-overlay';
+                    o.innerHTML=`<div class="modal-box"><p class="text-earth text-base mb-3">编辑图片说明</p><div class="mb-3"><label class="text-xs text-sage mb-1 block">说明文字</label><input type="text" class="js-overlay w-full px-4 py-2.5 rounded-lg border border-sage/20 focus:outline-none focus:border-sage bg-white/50 text-sm" value="${E(v.overlay||'')}" placeholder="输入说明文字..."></div><div class="mb-3"><label class="text-xs text-sage">字体大小: <span class="js-ofs-val">${v.overlayFs||16}</span>px</label><input type="range" class="js-ofs w-full accent-sage" min="10" max="36" value="${v.overlayFs||16}"></div><div class="flex justify-end gap-3 mt-4"><button class="js-cancel px-5 py-2 bg-sageLight/30 text-earth rounded-lg text-sm">取消</button><button class="js-ok px-5 py-2 bg-sage text-white rounded-lg text-sm">确定</button></div></div>`;
+                    const ofsSlider=o.querySelector('.js-ofs');
+                    ofsSlider.oninput=()=>o.querySelector('.js-ofs-val').textContent=ofsSlider.value;
+                    o.querySelector('.js-cancel').onclick=()=>o.remove();
+                    o.querySelector('.js-ok').onclick=()=>{v.overlay=o.querySelector('.js-overlay').value.trim();v.overlayFs=parseInt(ofsSlider.value);saveData();o.remove();renderVisions()};
+                    o.onclick=e=>{if(e.target===o)o.remove()};
+                    document.body.appendChild(o);
+                };
+                block.querySelector('.del-block').onclick=e=>{e.stopPropagation();data.visions=data.visions.filter(x=>x.id!==v.id);saveData();renderVisions()};
+            }
+            board.appendChild(block);
+        });
+        initBlockDragResize();
+    }
+
+    // ===== 显化知识库 =====
+    let knowledgeFilter='all';
+    function initKnowledge(){
+        renderKnowledgeCategories();renderKnowledge();
+        const addBtn=document.getElementById('add-knowledge');
+        if(addBtn)addBtn.onclick=()=>showKnowledgeModal();
+    }
+    function renderKnowledgeCategories(){
+        const sel=document.getElementById('knowledge-category');
+        if(!sel)return;
+        sel.innerHTML='<option value="all">全部</option>';
+        data.categories.forEach(c=>{const o=document.createElement('option');o.value=c;o.innerText=c;sel.appendChild(o)});
+        if(knowledgeFilter!=='all'&&!data.categories.includes(knowledgeFilter))knowledgeFilter='all';
+        sel.value=knowledgeFilter;
+        sel.onchange=()=>{knowledgeFilter=sel.value;renderKnowledge()};
+    }
+    function showKnowledgeModal(item){
+        const isEdit=!!item;
+        const current=item||{title:'',content:'',source:'',category:data.categories[0]||'',cs:2,rs:2,fontSize:13,baseColor:MORANDI_COLORS[0],opacity:.92};
+        ensureTextBlockVisual(current,current.category||'');
+        if(!MORANDI_COLORS.includes(current.baseColor))current.baseColor=MORANDI_COLORS[0];
+        const cats=data.categories.map(c=>`<option value="${E(c)}" ${c===current.category?'selected':''}>${E(c)}</option>`).join('');
+        const colorSwatches=MORANDI_COLORS.map(c=>`<button type="button" class="js-swatch swatch-btn ${c===current.baseColor?'active':''}" data-color="${c}" style="background:${c}" title="${c}"></button>`).join('');
+        const opacityPct=Math.round((current.opacity||0.92)*100);
+        const o=document.createElement('div');o.className='modal-overlay';
+        o.innerHTML=`<div class="modal-box"><p class="text-earth text-base mb-3">${isEdit?'编辑知识卡片':'添加知识卡片'}</p><div class="space-y-3"><input type="text" class="js-title w-full px-4 py-2.5 rounded-lg border border-sage/20 focus:outline-none focus:border-sage bg-white/50 text-sm" value="${E(current.title||'')}" placeholder="标题（如：显化四步法）"><textarea class="js-content w-full px-4 py-2.5 rounded-lg border border-sage/20 focus:outline-none focus:border-sage bg-white/50 text-sm" rows="4" placeholder="知识内容...">${E(current.content||'')}</textarea><input type="url" class="js-source w-full px-4 py-2.5 rounded-lg border border-sage/20 focus:outline-none focus:border-sage bg-white/50 text-sm" value="${E(current.source||'')}" placeholder="来源链接（小红书/B站/网页）"><select class="js-cat w-full px-4 py-2.5 rounded-lg border border-sage/20 focus:outline-none focus:border-sage bg-white/50 text-sm">${cats}</select><div class="grid grid-cols-2 gap-3"><div><label class="text-xs text-sage mb-1 block">颜色（莫兰迪）</label><div class="swatch-grid">${colorSwatches}</div><input type="hidden" class="js-color" value="${current.baseColor}"></div><div><label class="text-xs text-sage">透明度: <span class="js-op-val">${opacityPct}</span>%</label><input type="range" class="js-op w-full accent-sage" min="10" max="100" value="${opacityPct}"></div></div><div class="grid grid-cols-3 gap-3"><div><label class="text-xs text-sage">字号</label><input type="range" class="js-fs w-full accent-sage" min="10" max="24" value="${current.fontSize||13}"></div><div><label class="text-xs text-sage">列宽</label><input type="range" class="js-cs w-full accent-sage" min="1" max="8" value="${current.cs||2}"></div><div><label class="text-xs text-sage">行高</label><input type="range" class="js-rs w-full accent-sage" min="1" max="6" value="${current.rs||2}"></div></div></div><div class="flex justify-end gap-3 mt-4"><button class="js-cancel px-5 py-2 bg-sageLight/30 text-earth rounded-lg text-sm">取消</button><button class="js-ok px-5 py-2 bg-sage text-white rounded-lg text-sm">${isEdit?'保存':'添加'}</button></div></div>`;
+        o.querySelectorAll('.js-swatch').forEach(btn=>{btn.onclick=()=>{o.querySelectorAll('.js-swatch').forEach(b=>b.classList.remove('active'));btn.classList.add('active');o.querySelector('.js-color').value=btn.dataset.color}});
+        o.querySelector('.js-op').oninput=()=>o.querySelector('.js-op-val').textContent=o.querySelector('.js-op').value;
+        o.querySelector('.js-cancel').onclick=()=>o.remove();
+        o.querySelector('.js-ok').onclick=()=>{
+            const title=o.querySelector('.js-title').value.trim();
+            const content=o.querySelector('.js-content').value.trim();
+            const source=o.querySelector('.js-source').value.trim();
+            if(!title&&!content)return toast('请至少填写标题或内容','warn');
+            current.title=title;current.content=content;current.source=source;
+            current.category=o.querySelector('.js-cat').value;
+            current.baseColor=o.querySelector('.js-color').value;
+            current.opacity=clamp(+o.querySelector('.js-op').value/100,0.1,1);
+            current.color=buildRgba(current.baseColor,current.opacity);
+            current.fontSize=+o.querySelector('.js-fs').value;
+            current.cs=+o.querySelector('.js-cs').value;
+            current.rs=+o.querySelector('.js-rs').value;
+            if(!isEdit){current.id=Date.now();data.knowledge.unshift(current)}
+            saveData();o.remove();renderKnowledgeCategories();renderKnowledge();toast(isEdit?'知识卡片已更新':'知识卡片已添加');
+        };
+        o.onclick=e=>{if(e.target===o)o.remove()};
+        document.body.appendChild(o);
+    }
+    function renderKnowledge(){
+        const board=document.getElementById('knowledge-board'),empty=document.getElementById('empty-knowledge');
+        if(!board||!empty)return;
+        board.querySelectorAll('.knowledge-block,.leaf-deco').forEach(c=>c.remove());
+        const leaves=['🌿','🍃','🍀','🌱'];
+        ['5% 8%','85% 6%','12% 88%','80% 86%'].forEach((pos,i)=>{
+            const leaf=document.createElement('span');
+            leaf.className='leaf-deco';leaf.textContent=leaves[i];
+            leaf.style.top=pos.split(' ')[0];leaf.style.left=pos.split(' ')[1];
+            board.appendChild(leaf);
+        });
+        const arr=knowledgeFilter==='all'?data.knowledge:data.knowledge.filter(k=>k.category===knowledgeFilter);
+        if(!arr.length){empty.classList.remove('hidden');empty.style.display='';return}
+        empty.classList.add('hidden');empty.style.display='none';
+        arr.forEach((k,i)=>{
+            ensureTextBlockVisual(k,k.category||'');
+            const block=document.createElement('div');
+            block.className='vision-block knowledge-block soft-shadow text-block color-shift';
+            block.dataset.id=k.id;
+            block.style.gridColumn=`span ${Math.min(MAX_COL,k.cs||2)}`;
+            block.style.gridRow=`span ${k.rs||2}`;
+            block.style.background=k.color;
+            block.style.color=getTextColorForBg(k.color);
+            block.style.fontSize=(k.fontSize||13)+'px';
+            block.style.animationDelay=(i*0.04)+'s,'+(i*0.04+0.4)+'s';
+            const sourceHtml=k.source?`<a href="${E(k.source)}" target="_blank" rel="noopener" class="text-[10px] underline opacity-80" style="pointer-events:auto">来源链接</a>`:'<span class="text-[10px] opacity-50">无来源</span>';
+            const title=k.title?`<div class="font-semibold mb-1 line-clamp-2">${E(k.title)}</div>`:'';
+            const content=k.content?`<div class="text-xs leading-relaxed line-clamp-6">${E(k.content)}</div>`:'';
+            const tagHtml=k.category?`<div class="block-tag" style="background:${getCatTagBg(k.category)};color:#fff;opacity:1">${E(k.category)}</div>`:'';
+            block.innerHTML=`${tagHtml}<div class="edit-k" style="flex:1;display:flex;flex-direction:column;align-items:flex-start;justify-content:space-between;width:100%;padding:4px;cursor:pointer">${title}${content}<div class="mt-2">${sourceHtml}</div></div><div class="del-k del-block"><i class="fa fa-times"></i></div><div class="resize-right"></div><div class="resize-bottom"></div><div class="resize-handle"></div>`;
+            block.querySelector('.edit-k').onclick=()=>showKnowledgeModal(k);
+            block.querySelector('.del-k').onclick=e=>{e.stopPropagation();data.knowledge=data.knowledge.filter(x=>x.id!==k.id);saveData();renderKnowledge()};
+            board.appendChild(block);
+        });
+        initKnowledgeDragResize();
+    }
+    function initKnowledgeDragResize(){
+        if(typeof interact==='undefined')return;
+        interact('.knowledge-block').unset();
+        interact('.knowledge-block').draggable({
+            inertia:false,
+            ignoreFrom:'.resize-handle,.resize-right,.resize-bottom,.del-k,.edit-k,.block-tag,a',
+            modifiers:[interact.modifiers.restrictRect({restriction:'parent',endOnly:true})],
+            listeners:{
+                start(e){e.target.classList.add('dragging');e.target.style.zIndex=100;e.target.setAttribute('data-dx',0);e.target.setAttribute('data-dy',0)},
+                move(e){const dx=(parseFloat(e.target.getAttribute('data-dx'))||0)+e.dx;const dy=(parseFloat(e.target.getAttribute('data-dy'))||0)+e.dy;e.target.setAttribute('data-dx',dx);e.target.setAttribute('data-dy',dy);e.target.style.transform=`translate(${dx}px,${dy}px)`},
+                end(e){
+                    const id=parseInt(e.target.dataset.id);
+                    const dx=parseFloat(e.target.getAttribute('data-dx'))||0;
+                    const dy=parseFloat(e.target.getAttribute('data-dy'))||0;
+                    e.target.setAttribute('data-dx',0);e.target.setAttribute('data-dy',0);e.target.style.transform='';e.target.classList.remove('dragging');e.target.style.zIndex='';
+                    if(Math.abs(dx)<20&&Math.abs(dy)<20)return;
+                    const board=document.getElementById('knowledge-board');
+                    const blocks=[...board.querySelectorAll('.knowledge-block')];
+                    const draggedIdx=data.knowledge.findIndex(v=>v.id===id);
+                    if(draggedIdx<0)return;
+                    const rect=e.target.getBoundingClientRect();
+                    const cx=rect.left+rect.width/2+dx,cy=rect.top+rect.height/2+dy;
+                    let targetIdx=-1;
+                    for(let i=0;i<blocks.length;i++){
+                        if(blocks[i]===e.target)continue;
+                        const br=blocks[i].getBoundingClientRect();
+                        if(cx>=br.left&&cx<=br.right&&cy>=br.top&&cy<=br.bottom){targetIdx=i;break}
+                    }
+                    if(targetIdx>=0){
+                        const targetId=parseInt(blocks[targetIdx].dataset.id);
+                        const targetDataIdx=data.knowledge.findIndex(v=>v.id===targetId);
+                        if(targetDataIdx>=0&&targetDataIdx!==draggedIdx){
+                            const [item]=data.knowledge.splice(draggedIdx,1);
+                            const insertIdx=targetDataIdx>draggedIdx?targetDataIdx-1:targetDataIdx;
+                            data.knowledge.splice(insertIdx,0,item);
+                            saveData();renderKnowledge();
+                        }
+                    }
+                }
+            }
+        });
+        interact('.knowledge-block').resizable({
+            edges:{left:false,right:'.resize-right',bottom:'.resize-bottom',top:false},
+            inertia:false,
+            listeners:{
+                move(e){
+                    const block=e.target,id=parseInt(block.dataset.id),v=data.knowledge.find(x=>x.id===id);if(!v)return;
+                    const board=document.getElementById('knowledge-board');
+                    const colW=board.clientWidth/MAX_COL;
+                    const newCs=Math.max(1,Math.min(MAX_COL,Math.round(e.rect.width/colW)));
+                    const newRs=Math.max(1,Math.round(e.rect.height/80));
+                    block.style.gridColumn=`span ${newCs}`;block.style.gridRow=`span ${newRs}`;
+                },
+                end(e){
+                    const block=e.target,id=parseInt(block.dataset.id),v=data.knowledge.find(x=>x.id===id);if(!v)return;
+                    const board=document.getElementById('knowledge-board');
+                    const colW=board.clientWidth/MAX_COL;
+                    v.cs=Math.max(1,Math.min(MAX_COL,Math.round(e.rect.width/colW)));
+                    v.rs=Math.max(1,Math.round(e.rect.height/80));
+                    saveData();renderKnowledge();
+                }
+            }
+        });
+    }
+
+    function initBlockDragResize(){
+        if(typeof interact==='undefined')return;
+        interact('.vision-block').unset();
+        // Drag to reorder
+        interact('.vision-block').draggable({
+            inertia:false,
+            ignoreFrom:'.resize-handle,.resize-right,.resize-bottom,.del-block,.edit-text,.block-tag,.img-overlay',
+            modifiers:[interact.modifiers.restrictRect({restriction:'parent',endOnly:true})],
+            listeners:{
+                start(e){
+                    e.target.classList.add('dragging');
+                    e.target.style.zIndex=100;
+                    e.target.setAttribute('data-dx',0);
+                    e.target.setAttribute('data-dy',0);
+                },
+                move(e){
+                    const dx=(parseFloat(e.target.getAttribute('data-dx'))||0)+e.dx;
+                    const dy=(parseFloat(e.target.getAttribute('data-dy'))||0)+e.dy;
+                    e.target.setAttribute('data-dx',dx);
+                    e.target.setAttribute('data-dy',dy);
+                    e.target.style.transform=`translate(${dx}px,${dy}px)`;
+                },
+                end(e){
+                    const id=parseInt(e.target.dataset.id);
+                    const dx=parseFloat(e.target.getAttribute('data-dx'))||0;
+                    const dy=parseFloat(e.target.getAttribute('data-dy'))||0;
+                    e.target.setAttribute('data-dx',0);
+                    e.target.setAttribute('data-dy',0);
+                    e.target.style.transform='';
+                    e.target.classList.remove('dragging');
+                    e.target.style.zIndex='';
+                    // Only reorder if dragged a meaningful distance
+                    if(Math.abs(dx)<20&&Math.abs(dy)<20)return;
+                    const board=document.getElementById('vision-board');
+                    const blocks=[...board.querySelectorAll('.vision-block')];
+                    const draggedIdx=data.visions.findIndex(v=>v.id===id);
+                    if(draggedIdx<0)return;
+                    const rect=e.target.getBoundingClientRect();
+                    const cx=rect.left+rect.width/2+dx;
+                    const cy=rect.top+rect.height/2+dy;
+                    let targetIdx=-1;
+                    for(let i=0;i<blocks.length;i++){
+                        if(blocks[i]===e.target)continue;
+                        const br=blocks[i].getBoundingClientRect();
+                        if(cx>=br.left&&cx<=br.right&&cy>=br.top&&cy<=br.bottom){targetIdx=i;break}
+                    }
+                    if(targetIdx>=0){
+                        const targetId=parseInt(blocks[targetIdx].dataset.id);
+                        const targetDataIdx=data.visions.findIndex(v=>v.id===targetId);
+                        if(targetDataIdx>=0&&targetDataIdx!==draggedIdx){
+                            const [item]=data.visions.splice(draggedIdx,1);
+                            const insertIdx=targetDataIdx>draggedIdx?targetDataIdx-1:targetDataIdx;
+                            data.visions.splice(insertIdx,0,item);
+                            saveData();renderVisions();
+                        }
+                    }
+                }
+            }
+        });
+        // Resize by dragging right edge, bottom edge, or corner handle
+        interact('.vision-block').resizable({
+            edges:{left:false,right:'.resize-right',bottom:'.resize-bottom',top:false},
+            inertia:false,
+            modifiers:[],
+            listeners:{
+                start(e){
+                    e.target.style.zIndex=50;
+                },
+                move(e){
+                    const block=e.target;
+                    const id=parseInt(block.dataset.id);
+                    const v=data.visions.find(x=>x.id===id);
+                    if(!v)return;
+                    const board=document.getElementById('vision-board');
+                    const colW=board.clientWidth/MAX_COL;
+                    const newCs=Math.max(1,Math.min(MAX_COL,Math.round(e.rect.width/colW)));
+                    const newRs=Math.max(1,Math.round(e.rect.height/80));
+                    block.style.gridColumn=`span ${newCs}`;
+                    block.style.gridRow=`span ${newRs}`;
+                },
+                end(e){
+                    const block=e.target;
+                    const id=parseInt(block.dataset.id);
+                    const v=data.visions.find(x=>x.id===id);
+                    if(!v)return;
+                    const board=document.getElementById('vision-board');
+                    const colW=board.clientWidth/MAX_COL;
+                    const newCs=Math.max(1,Math.min(MAX_COL,Math.round(e.rect.width/colW)));
+                    const newRs=Math.max(1,Math.round(e.rect.height/80));
+                    v.cs=newCs;v.rs=newRs;
+                    block.style.zIndex='';
+                    saveData();renderVisions();
+                }
+            }
+        });
+    }
+
+    // ===== 显化句 =====
+    let affFilter='all',dragAffId=null;
+
+    function reorderAffirmations(dragId,targetId){
+        if(!dragId||!targetId||dragId===targetId)return;
+        const fromIdx=data.affirmations.findIndex(a=>a.id===dragId);
+        const toIdx=data.affirmations.findIndex(a=>a.id===targetId);
+        if(fromIdx<0||toIdx<0||fromIdx===toIdx)return;
+        const [moved]=data.affirmations.splice(fromIdx,1);
+        const insertIdx=toIdx>fromIdx?toIdx-1:toIdx;
+        data.affirmations.splice(insertIdx,0,moved);
+        saveData();
+        renderAffirmations();
+    }
+
+    function initAffirmations(){
+        renderCategories();renderAffirmations();
+        const allBtn=document.querySelector('.category-btn[data-category="all"]');
+        if(allBtn){
+            allBtn.onclick=function(){
+                document.querySelectorAll('.category-btn').forEach(b=>{b.classList.remove('active','bg-sage/10','text-sage');b.classList.add('bg-sageLight/20','text-earth')});
+                this.classList.add('active','bg-sage/10','text-sage');this.classList.remove('bg-sageLight/20','text-earth');
+                renderAffirmations('all');
+            };
+        }
+        document.getElementById('add-category').onclick=()=>{
+            if(data.categories.length>=10)return toast('最多10个分类','warn');
+            showPrompt('新增分类名：','',name=>{if(name&&!data.categories.includes(name)){data.categories.push(name.trim());saveData();renderCategories();renderSubCategories();renderKnowledgeCategories();renderKnowledge();toast('分类已添加')}});
+        };
+        document.getElementById('manage-categories').onclick=()=>{
+            const o=document.createElement('div');o.className='modal-overlay';
+            const catList=data.categories.map((cat,idx)=>`<div class="flex items-center gap-2 py-2 px-3 rounded-lg hover:bg-sageLight/10 transition-colors"><span class="flex-1 text-earth text-sm">${E(cat)}</span><button class="js-rename px-2 py-1 text-xs bg-sageLight/20 text-earth rounded hover:bg-sageLight/30" data-idx="${idx}"><i class="fa fa-pencil"></i></button><button class="js-up px-2 py-1 text-xs bg-sageLight/20 text-earth rounded hover:bg-sageLight/30 ${idx===0?'opacity-30':''}" data-idx="${idx}"><i class="fa fa-arrow-up"></i></button><button class="js-down px-2 py-1 text-xs bg-sageLight/20 text-earth rounded hover:bg-sageLight/30 ${idx===data.categories.length-1?'opacity-30':''}" data-idx="${idx}"><i class="fa fa-arrow-down"></i></button><button class="js-del px-2 py-1 text-xs bg-red-50 text-red-400 rounded hover:bg-red-100" data-idx="${idx}"><i class="fa fa-trash-o"></i></button></div>`).join('');
+            o.innerHTML=`<div class="modal-box"><p class="text-earth text-base mb-3">管理分类</p><div class="space-y-1 max-h-[300px] overflow-y-auto mb-3">${catList}</div><div class="flex justify-end"><button class="js-close px-5 py-2 bg-sageLight/30 text-earth rounded-lg text-sm">关闭</button></div></div>`;
+            o.querySelector('.js-close').onclick=()=>o.remove();
+            o.querySelectorAll('.js-rename').forEach(btn=>{btn.onclick=()=>{const idx=parseInt(btn.dataset.idx);const cat=data.categories[idx];o.remove();showPrompt('重命名分类：',cat,name=>{if(name&&name.trim()&&!data.categories.includes(name.trim())){const nc=name.trim();data.categories[idx]=nc;data.affirmations.filter(a=>a.category===cat).forEach(a=>a.category=nc);data.visions.filter(v=>v.category===cat).forEach(v=>v.category=nc);data.subs.filter(s=>s.cat===cat).forEach(s=>s.cat=nc);data.knowledge.filter(k=>k.category===cat).forEach(k=>k.category=nc);saveData();renderCategories();renderSubCategories();renderKnowledgeCategories();renderAffirmations();renderVisions();renderKnowledge();renderSubs();toast('分类已重命名');document.getElementById('manage-categories').click()}})}});
+            o.querySelectorAll('.js-up').forEach(btn=>{btn.onclick=()=>{const idx=parseInt(btn.dataset.idx);if(idx>0){[data.categories[idx-1],data.categories[idx]]=[data.categories[idx],data.categories[idx-1]];saveData();renderCategories();renderSubCategories();renderKnowledgeCategories();renderAffirmations();renderKnowledge();o.remove();document.getElementById('manage-categories').click()}}});
+            o.querySelectorAll('.js-down').forEach(btn=>{btn.onclick=()=>{const idx=parseInt(btn.dataset.idx);if(idx<data.categories.length-1){[data.categories[idx],data.categories[idx+1]]=[data.categories[idx+1],data.categories[idx]];saveData();renderCategories();renderSubCategories();renderKnowledgeCategories();renderAffirmations();renderKnowledge();o.remove();document.getElementById('manage-categories').click()}}});
+            o.querySelectorAll('.js-del').forEach(btn=>{btn.onclick=()=>{const idx=parseInt(btn.dataset.idx);const cat=data.categories[idx];o.remove();showConfirm(`删除分类"${cat}"？该分类下的内容会改到首个分类`,()=>{data.categories.splice(idx,1);const fallback=data.categories[0]||'';data.affirmations.filter(a=>a.category===cat).forEach(a=>a.category=fallback);data.visions.filter(v=>v.category===cat).forEach(v=>v.category=fallback);data.subs.filter(s=>s.cat===cat).forEach(s=>s.cat=fallback);data.knowledge.filter(k=>k.category===cat).forEach(k=>k.category=fallback);saveData();renderCategories();renderSubCategories();renderKnowledgeCategories();renderAffirmations();renderVisions();renderKnowledge();renderSubs();toast('分类已删除');document.getElementById('manage-categories').click()})}});
+            o.onclick=e=>{if(e.target===o)o.remove()};
+            document.body.appendChild(o);
+        };
+        document.getElementById('add-affirmation').onclick=()=>{
+            const txt=document.getElementById('new-affirmation').value.trim(),cat=document.getElementById('affirmation-category').value;
+            if(!txt)return toast('请输入显化句','warn');
+            data.affirmations.push({id:Date.now(),text:txt,category:cat});saveData();
+            document.getElementById('new-affirmation').value='';renderAffirmations();updateRandomAffirmation();renderVisions();toast('显化句已添加');
+        };
+        document.getElementById('next-affirmation').onclick=updateRandomAffirmation;
+        // Enter key to add
+        document.getElementById('new-affirmation').onkeydown=e=>{if(e.key==='Enter')document.getElementById('add-affirmation').click()};
+    }
+    function renderCategories(){
+        const container=document.getElementById('category-container');
+        container.querySelectorAll('.category-btn:not([data-category="all"])').forEach(el=>el.remove());
+        const select=document.getElementById('affirmation-category');select.innerHTML='';
+        data.categories.forEach(cat=>{
+            const btn=document.createElement('button');
+            btn.className='category-btn px-2.5 py-1 bg-sageLight/20 text-earth rounded-full text-xs';
+            btn.dataset.category=cat;btn.innerText=cat;
+            btn.onclick=function(){
+                document.querySelectorAll('.category-btn').forEach(b=>{b.classList.remove('active','bg-sage/10','text-sage');b.classList.add('bg-sageLight/20','text-earth')});
+                this.classList.add('active','bg-sage/10','text-sage');this.classList.remove('bg-sageLight/20','text-earth');
+                renderAffirmations(this.dataset.category);
+            };
+            container.insertBefore(btn,document.getElementById('add-category'));
+            const opt=document.createElement('option');opt.value=cat;opt.innerText=cat;select.appendChild(opt);
+        });
+        // Sync vision category dropdown
+        const vcs=document.getElementById('vision-category');
+        if(vcs){vcs.innerHTML='<option value="all">全部</option>';data.categories.forEach(c=>{const o=document.createElement('option');o.value=c;o.innerText=c;vcs.appendChild(o)})}
+    }
+    function renderAffirmations(filter){
+        if(typeof filter==='string')affFilter=filter;
+        const currentFilter=affFilter||'all';
+        const list=document.getElementById('affirmations-list');
+        let arr=currentFilter==='all'?data.affirmations:data.affirmations.filter(x=>x.category===currentFilter);
+        if(selectedAffId&&!data.affirmations.some(a=>a.id===selectedAffId)){selectedAffId=null;data.selectedAff=null;saveData()}
+        renderCounterAffOptions();
+        if(!arr.length){list.innerHTML='<p class="text-center text-sage py-8">暂无显化句</p>';return}
+        list.innerHTML='';arr.forEach(item=>{
+            const div=document.createElement('div');
+            div.className='aff-card'+(selectedAffId===item.id?' selected':'');
+            div.draggable=true;
+            div.dataset.affId=item.id;
+            const pct=Math.min(100,Math.round((item.count||0)/(item.goal||108)*100));
+            const barColor=getCatColor(item.category);
+            div.innerHTML=`<div style="flex:1;min-width:0;cursor:pointer" class="aff-select"><div class="flex items-center gap-2"><span class="px-2 py-0.5 text-xs rounded-full" style="background:${getCatTagBg(item.category)};color:#fff">${E(item.category)}</span><span class="text-xs text-sage">${item.count||0}/${item.goal||108}</span></div><p class="mt-1 text-earth text-sm truncate aff-text-edit" title="点击编辑">${E(item.text)}</p><div class="aff-progress"><div class="aff-progress-bar" style="width:${pct}%;background:${barColor}"></div></div></div><div class="flex items-center gap-1 flex-shrink-0"><button class="del-aff text-sage/40 hover:text-red-400 transition-colors" title="删除"><i class="fa fa-trash-o text-xs"></i></button></div>`;
+            // Click text or card to edit
+            const editAff=()=>{
+                const cats=data.categories.map(c=>`<option value="${c}" ${c===item.category?'selected':''}>${c}</option>`).join('');
+                const o=document.createElement('div');o.className='modal-overlay';
+                o.innerHTML=`<div class="modal-box"><p class="text-earth text-base mb-3">编辑显化句</p><input type="text" class="js-input w-full px-4 py-2.5 rounded-lg border border-sage/20 focus:outline-none focus:border-sage bg-white/50 text-sm mb-3" value="${E(item.text)}"><select class="js-sel w-full px-4 py-2.5 rounded-lg border border-sage/20 focus:outline-none focus:border-sage bg-white/50 text-sm">${cats}</select><div class="flex justify-end gap-3 mt-4"><button class="js-cancel px-5 py-2 bg-sageLight/30 text-earth rounded-lg text-sm">取消</button><button class="js-ok px-5 py-2 bg-sage text-white rounded-lg text-sm">确定</button></div></div>`;
+                const inp=o.querySelector('.js-input');
+                o.querySelector('.js-cancel').onclick=()=>o.remove();
+                o.querySelector('.js-ok').onclick=()=>{const txt=inp.value.trim();if(txt){item.text=txt;item.category=o.querySelector('.js-sel').value;saveData();o.remove();renderAffirmations(filter);updateRandomAffirmation();renderVisions()}};
+                inp.onkeydown=e=>{if(e.key==='Enter'){const txt=inp.value.trim();if(txt){item.text=txt;item.category=o.querySelector('.js-sel').value;saveData();o.remove();renderAffirmations(filter);updateRandomAffirmation();renderVisions()}}};
+                o.onclick=e=>{if(e.target===o)o.remove()};
+                document.body.appendChild(o);setTimeout(()=>inp.focus(),100);
+            };
+            div.querySelector('.aff-select').onclick=()=>selectAffirmation(item.id);
+            div.querySelector('.aff-text-edit').onclick=e=>{e.stopPropagation();editAff()};
+            div.querySelector('.del-aff').onclick=e=>{e.stopPropagation();if(selectedAffId===item.id){selectedAffId=null;data.selectedAff=null}data.hiddenAffVisionIds=(data.hiddenAffVisionIds||[]).filter(id=>id!==item.id);data.affirmations=data.affirmations.filter(x=>x.id!==item.id);saveData();renderAffirmations(filter);updateRandomAffirmation();renderVisions()};
+
+            div.addEventListener('dragstart',e=>{
+                dragAffId=item.id;
+                div.classList.add('dragging');
+                if(e.dataTransfer){
+                    e.dataTransfer.effectAllowed='move';
+                    e.dataTransfer.setData('text/plain',String(item.id));
+                }
+            });
+            div.addEventListener('dragend',()=>{
+                dragAffId=null;
+                div.classList.remove('dragging');
+                list.querySelectorAll('.aff-card').forEach(c=>c.classList.remove('drag-over'));
+            });
+            div.addEventListener('dragover',e=>{
+                if(dragAffId===item.id)return;
+                e.preventDefault();
+                div.classList.add('drag-over');
+            });
+            div.addEventListener('dragleave',()=>div.classList.remove('drag-over'));
+            div.addEventListener('drop',e=>{
+                e.preventDefault();
+                div.classList.remove('drag-over');
+                reorderAffirmations(dragAffId,item.id);
+            });
+
+            list.appendChild(div);
+        });
+    }
+    function updateRandomAffirmation(){
+        const el=document.getElementById('random-affirmation');
+        if(!data.affirmations.length){el.innerText='添加你的第一条专属显化句';return}
+        el.style.opacity=0;
+        setTimeout(()=>{el.innerText=data.affirmations[Math.floor(Math.random()*data.affirmations.length)].text;el.style.opacity=1},200);
+        el.style.transition='opacity .2s';
+    }
+
+    // ===== 酥饼仓库 =====
+    function getSubCategories(){return Array.isArray(data.categories)&&data.categories.length?data.categories:['未分类']}
+    function initSubs(){
+        renderSubCategories();renderSubs();
+        document.getElementById('add-sub').onclick=()=>{
+            const title=document.getElementById('sub-title').value.trim(),url=document.getElementById('sub-url').value.trim(),cat=document.getElementById('sub-category').value;
+            if(!title||!url)return toast('请填写完整信息','warn');
+            data.subs.push({id:Date.now(),title,url,cat,time:0});saveData();
+            document.getElementById('sub-title').value='';document.getElementById('sub-url').value='';renderSubs();toast('酥饼已添加');
+        };
+        bindSubCategoryBtns();
+    }
+    function renderSubCategories(){
+        const container=document.getElementById('sub-category-container');
+        container.querySelectorAll('.sub-category-btn:not([data-subcat="all"])').forEach(el=>el.remove());
+        const select=document.getElementById('sub-category');select.innerHTML='';
+        getSubCategories().forEach(cat=>{
+            const btn=document.createElement('button');
+            btn.className='sub-category-btn px-3 py-1.5 bg-sageLight/20 text-earth rounded-full text-sm';
+            btn.dataset.subcat=cat;btn.innerText=cat;
+            const anchor=document.getElementById('add-sub-category');
+            if(anchor)container.insertBefore(btn,anchor);else container.appendChild(btn);
+            const opt=document.createElement('option');opt.value=cat;opt.innerText=cat;select.appendChild(opt);
+        });
+        bindSubCategoryBtns();
+    }
+    function bindSubCategoryBtns(){
+        document.querySelectorAll('.sub-category-btn').forEach(btn=>{
+            btn.onclick=function(){
+                document.querySelectorAll('.sub-category-btn').forEach(b=>{b.classList.remove('active','bg-sage/10','text-sage');b.classList.add('bg-sageLight/20','text-earth')});
+                this.classList.add('active','bg-sage/10','text-sage');this.classList.remove('bg-sageLight/20','text-earth');
+                renderSubs(this.dataset.subcat);
+            }
+        });
+    }
+    function renderSubs(filter='all'){
+        const list=document.getElementById('subs-list');
+        let arr=filter==='all'?data.subs:data.subs.filter(x=>x.cat===filter);
+        if(!arr.length){list.innerHTML='<div class="col-span-full text-center text-sage py-12">暂无酥饼</div>';return}
+        list.innerHTML='';arr.forEach(item=>{
+            const card=document.createElement('div');
+            card.className='sub-card bg-white soft-shadow rounded-xl p-4 slide-up';
+            let embedUrl='';
+            const bvMatch=item.url.match(/BV[\w]+/);
+            if(bvMatch)embedUrl=`//player.bilibili.com/player.html?bvid=${bvMatch[0]}&autoplay=0&high_quality=1`;
+            const ytMatch=item.url.match(/(?:youtube\.com\/watch\?v=|youtu\.be\/)([\w-]+)/);
+            if(ytMatch)embedUrl=`https://www.youtube.com/embed/${ytMatch[1]}`;
+            card.innerHTML=`<div class="flex justify-between items-start mb-2"><h4 class="font-serif text-earth text-sm">${E(item.title)}</h4><div class="flex items-center gap-2"><span class="text-xs px-2 py-0.5 bg-sage/10 text-sage rounded-full">${E(item.cat)}</span><button class="edit-sub text-sage/40 hover:text-earth text-xs" title="编辑"><i class="fa fa-pencil"></i></button></div></div>${item.note?`<p class="text-xs text-sage/60 mb-2">${E(item.note)}</p>`:''}<div class="text-sm text-sage hover:underline block mb-2 truncate cursor-pointer sub-play-btn" title="站内播放"><i class="fa fa-play-circle mr-1"></i>${E(item.url)}</div>${embedUrl?`<div class="sub-player-wrap" style="display:none"></div>`:''}<div class="flex justify-between items-center"><span class="text-xs text-earth">累计聆听：${item.time||0} 次</span><button class="del-sub text-red-400 text-sm hover:underline">删除</button></div>`;
+            // Play button
+            const playBtn=card.querySelector('.sub-play-btn');
+            if(playBtn&&embedUrl){
+                playBtn.onclick=()=>{
+                    const wrap=card.querySelector('.sub-player-wrap');
+                    if(wrap.style.display==='none'){
+                        wrap.innerHTML=`<iframe src="${E(embedUrl)}" allowfullscreen allow="autoplay; encrypted-media"></iframe>`;
+                        wrap.style.display='block';
+                        playBtn.innerHTML=`<i class="fa fa-stop mr-1"></i>${E(item.url)}`;
+                        item.time=(item.time||0)+1;saveData();
+                        const ts=card.querySelector('.text-xs.text-earth');if(ts)ts.textContent='累计聆听：'+item.time+' 次';
+                    }else{
+                        wrap.innerHTML='';wrap.style.display='none';
+                        playBtn.innerHTML=`<i class="fa fa-play-circle mr-1"></i>${E(item.url)}`;
+                    }
+                };
+            }else if(playBtn){
+                playBtn.onclick=()=>window.open(item.url,'_blank');
+            }
+            // Edit button
+            card.querySelector('.edit-sub').onclick=e=>{
+                e.stopPropagation();
+                const cats=getSubCategories().map(c=>`<option value="${c}" ${c===item.cat?'selected':''}>${c}</option>`).join('');
+                const o=document.createElement('div');o.className='modal-overlay';
+                o.innerHTML=`<div class="modal-box"><p class="text-earth text-base mb-3">编辑酥饼</p><input type="text" class="js-title w-full px-4 py-2.5 rounded-lg border border-sage/20 focus:outline-none focus:border-sage bg-white/50 text-sm mb-2" value="${E(item.title)}" placeholder="标题"><input type="url" class="js-url w-full px-4 py-2.5 rounded-lg border border-sage/20 focus:outline-none focus:border-sage bg-white/50 text-sm mb-2" value="${E(item.url)}" placeholder="链接"><select class="js-cat w-full px-4 py-2.5 rounded-lg border border-sage/20 focus:outline-none focus:border-sage bg-white/50 text-sm mb-2">${cats}</select><input type="text" class="js-note w-full px-4 py-2.5 rounded-lg border border-sage/20 focus:outline-none focus:border-sage bg-white/50 text-sm" value="${E(item.note||'')}" placeholder="备注（可选）"><div class="flex justify-end gap-3 mt-4"><button class="js-cancel px-5 py-2 bg-sageLight/30 text-earth rounded-lg text-sm">取消</button><button class="js-ok px-5 py-2 bg-sage text-white rounded-lg text-sm">保存</button></div></div>`;
+                o.querySelector('.js-cancel').onclick=()=>o.remove();
+                o.querySelector('.js-ok').onclick=()=>{
+                    const t=o.querySelector('.js-title').value.trim(),u=o.querySelector('.js-url').value.trim();
+                    if(!t||!u)return toast('标题和链接不能为空','warn');
+                    item.title=t;item.url=u;item.cat=o.querySelector('.js-cat').value;item.note=o.querySelector('.js-note').value.trim();
+                    saveData();o.remove();renderSubs(filter);toast('酥饼已更新');
+                };
+                o.onclick=e=>{if(e.target===o)o.remove()};
+                document.body.appendChild(o);
+            };
+            card.querySelector('.del-sub').onclick=()=>showConfirm('删除该酥饼？',()=>{data.subs=data.subs.filter(x=>x.id!==item.id);saveData();renderSubs()});
+            list.appendChild(card);
+        });
+    }
+
+    // ===== 感恩日记 =====
+    let graFilter='all',graSelectedTags=[];
+    function initGratitude(){
+        renderGratitudeTags();renderGratitude();
+        document.getElementById('save-gratitude').onclick=()=>{
+            const content=document.getElementById('gratitude-content').value.trim();
+            if(!content)return toast('请写点什么','warn');
+            const mood=document.getElementById('gratitude-mood').value;
+            const tags=graSelectedTags.slice();
+            if(currentGratitudeId){
+                const idx=data.gratitude.findIndex(x=>x.id===currentGratitudeId);
+                if(idx>=0){data.gratitude[idx].content=content;data.gratitude[idx].mood=mood;data.gratitude[idx].tags=tags;data.gratitude[idx].date=new Date().toLocaleString('zh-CN')}
+            }else{
+                data.gratitude.unshift({id:Date.now(),content,mood,tags,date:new Date().toLocaleString('zh-CN'),likes:0});
+            }
+            saveData();renderGratitude();
+            document.getElementById('gratitude-content').value='';
+            graSelectedTags=[];renderGratitudeTags();currentGratitudeId=null;
+            toast('发布成功 ✨');
+        };
+        // Ctrl+Enter to post
+        document.getElementById('gratitude-content').onkeydown=e=>{
+            if(e.key==='Enter'&&(e.ctrlKey||e.metaKey)){e.preventDefault();document.getElementById('save-gratitude').click()}
+        };
+    }
+    function renderGratitudeTags(){
+        const container=document.getElementById('gratitude-tags');
+        container.innerHTML='';
+        data.categories.forEach(cat=>{
+            const btn=document.createElement('button');
+            btn.className=`px-2 py-0.5 rounded-full text-[10px] border transition-colors ${graSelectedTags.includes(cat)?'bg-sage/20 text-sage border-sage/30':'bg-white/40 text-earth/50 border-sage/10 hover:border-sage/20'}`;
+            btn.textContent=cat;
+            btn.onclick=()=>{
+                const i=graSelectedTags.indexOf(cat);
+                if(i>=0)graSelectedTags.splice(i,1);else graSelectedTags.push(cat);
+                renderGratitudeTags();
+            };
+            container.appendChild(btn);
+        });
+        // Render filter buttons
+        const filterContainer=document.getElementById('gratitude-filter');
+        filterContainer.innerHTML='';
+        const allBtn=document.createElement('button');
+        allBtn.className=`gra-filter-btn px-3 py-1.5 rounded-full text-sm ${graFilter==='all'?'bg-sage/10 text-sage':'bg-sageLight/20 text-earth'}`;
+        allBtn.textContent='全部';allBtn.dataset.filter='all';
+        allBtn.onclick=()=>{graFilter='all';renderGratitudeTags();renderGratitude()};
+        filterContainer.appendChild(allBtn);
+        data.categories.forEach(cat=>{
+            const btn=document.createElement('button');
+            btn.className=`gra-filter-btn px-3 py-1.5 rounded-full text-sm ${graFilter===cat?'bg-sage/10 text-sage':'bg-sageLight/20 text-earth'}`;
+            btn.textContent=cat;btn.dataset.filter=cat;
+            btn.onclick=()=>{graFilter=cat;renderGratitudeTags();renderGratitude()};
+            filterContainer.appendChild(btn);
+        });
+    }
+    function renderGratitude(){
+        const list=document.getElementById('gratitude-list');
+        let items=graFilter==='all'?data.gratitude:data.gratitude.filter(x=>(x.tags||[]).includes(graFilter));
+        if(!items.length){list.innerHTML='<div class="text-center text-sage py-12"><i class="fa fa-heart-o text-4xl mb-3 block opacity-20"></i><p>还没有感恩日记，开始记录美好吧 ✨</p></div>';return}
+        list.innerHTML='';items.forEach(item=>{
+            const div=document.createElement('div');
+            div.className='bg-white/70 rounded-xl p-4 slide-up soft-shadow';
+            const mood=item.mood||'🙏';
+            const likes=item.likes||0;
+            const tagsHtml=(item.tags||[]).map(t=>`<span class="px-2 py-0.5 text-[10px] rounded-full" style="background:${getCatTagBg(t)};color:#fff">${E(t)}</span>`).join('');
+            div.innerHTML=`<div class="flex items-start gap-3"><div class="w-9 h-9 rounded-full bg-sage/15 flex items-center justify-center text-lg flex-shrink-0">${mood}</div><div class="flex-1 min-w-0"><div class="flex items-center justify-between mb-1"><span class="text-xs text-sage">${E(item.date)}</span><div class="flex gap-2"><button class="edit-gra text-sage/40 hover:text-earth text-xs"><i class="fa fa-pencil"></i></button><button class="del-gra text-sage/40 hover:text-red-400 text-xs"><i class="fa fa-trash-o"></i></button></div></div><p class="text-earth whitespace-pre-wrap text-sm leading-relaxed">${E(item.content)}</p>${tagsHtml?`<div class="flex flex-wrap gap-1 mt-2">${tagsHtml}</div>`:''}<div class="flex items-center gap-4 mt-3 pt-2 border-t border-sage/10"><button class="like-btn flex items-center gap-1 text-xs text-sage/50 hover:text-red-400 transition-colors"><i class="fa fa-heart-o"></i><span class="like-count">${likes}</span></button></div></div></div>`;
+            div.querySelector('.edit-gra').onclick=()=>{
+                currentGratitudeId=item.id;
+                document.getElementById('gratitude-content').value=item.content;
+                if(item.mood)document.getElementById('gratitude-mood').value=item.mood;
+                graSelectedTags=(item.tags||[]).slice();renderGratitudeTags();
+                document.getElementById('gratitude-content').focus();
+            };
+            div.querySelector('.del-gra').onclick=()=>showConfirm('删除这条日记？',()=>{data.gratitude=data.gratitude.filter(x=>x.id!==item.id);saveData();renderGratitude()});
+            div.querySelector('.like-btn').onclick=function(){
+                item.likes=(item.likes||0)+1;saveData();
+                this.querySelector('.like-count').textContent=item.likes;
+                this.querySelector('i').className='fa fa-heart';
+                this.classList.add('text-red-400');this.classList.remove('text-sage/50');
+            };
+            list.appendChild(div);
+        });
+    }
+
+    // ===== 静心计时器 + 白噪音 =====
+    let noiseCtx=null,noiseSource=null,noiseGain=null,activeNoise=null;
+
+    function startNoise(type){
+        stopNoise();
+        if(!noiseCtx)noiseCtx=new(window.AudioContext||window.webkitAudioContext)();
+        const sr=noiseCtx.sampleRate,len=2*sr;
+        const buf=noiseCtx.createBuffer(2,len,sr);
+        // Generate noise
+        for(let ch=0;ch<2;ch++){
+            const d=buf.getChannelData(ch);
+            for(let i=0;i<len;i++)d[i]=Math.random()*2-1;
+        }
+        noiseSource=noiseCtx.createBufferSource();
+        noiseSource.buffer=buf;noiseSource.loop=true;
+        noiseGain=noiseCtx.createGain();
+        const vol=document.getElementById('noise-volume').value/100;
+        noiseGain.gain.value=vol*0.3;
+
+        // Apply filter per type
+        let filter;
+        if(type==='rain'){
+            filter=noiseCtx.createBiquadFilter();filter.type='bandpass';filter.frequency.value=800;filter.Q.value=0.5;
+        }else if(type==='ocean'){
+            filter=noiseCtx.createBiquadFilter();filter.type='lowpass';filter.frequency.value=400;filter.Q.value=0.7;
+            // Add slow modulation
+            const lfo=noiseCtx.createOscillator();lfo.frequency.value=0.1;
+            const lfoGain=noiseCtx.createGain();lfoGain.gain.value=200;
+            lfo.connect(lfoGain);lfoGain.connect(filter.frequency);lfo.start();
+        }else if(type==='forest'){
+            filter=noiseCtx.createBiquadFilter();filter.type='bandpass';filter.frequency.value=2000;filter.Q.value=0.3;
+        }else if(type==='fire'){
+            filter=noiseCtx.createBiquadFilter();filter.type='lowpass';filter.frequency.value=300;filter.Q.value=1;
+        }else if(type==='wind'){
+            filter=noiseCtx.createBiquadFilter();filter.type='bandpass';filter.frequency.value=500;filter.Q.value=0.2;
+        }else{
+            filter=noiseCtx.createBiquadFilter();filter.type='lowpass';filter.frequency.value=1000;
+        }
+        noiseSource.connect(filter);filter.connect(noiseGain);noiseGain.connect(noiseCtx.destination);
+        noiseSource.start();
+        activeNoise=type;
+        // Update button styles
+        document.querySelectorAll('.noise-btn').forEach(b=>{
+            b.classList.toggle('active',b.dataset.noise===type);
+        });
+    }
+    function stopNoise(){
+        if(noiseSource){try{noiseSource.stop()}catch(e){}noiseSource=null}
+        activeNoise=null;
+        document.querySelectorAll('.noise-btn').forEach(b=>b.classList.remove('active'));
+    }
+
+    function initTimer(){
+        const fm=document.getElementById('float-meditation');
+        const fmTime=document.getElementById('fm-time');
+        const fmLabel=document.getElementById('fm-label');
+        const fmExpand=document.getElementById('fm-expand');
+        if(data.floatUI&&data.floatUI.meditation){
+            const s=Math.max(.8,Math.min(1.5,Number(data.floatUI.meditation.scale)||1));
+            fm.style.zoom=String(s);
+            if(Number.isFinite(data.floatUI.meditation.x)&&Number.isFinite(data.floatUI.meditation.y)){
+                fm.style.left=data.floatUI.meditation.x+'px';
+                fm.style.top=data.floatUI.meditation.y+'px';
+                fm.style.right='auto';
+                fm.style.bottom='auto';
+            }
+            const fmSize=document.getElementById('fm-size');
+            const fmSizeVal=document.getElementById('fm-size-val');
+            if(fmSize&&fmSizeVal){
+                fmSize.value=String(Math.round(s*100));
+                fmSizeVal.textContent=String(Math.round(s*100));
+                fmSize.oninput=()=>{
+                    const pct=Math.max(80,Math.min(150,Number(fmSize.value)||100));
+                    const ns=pct/100;
+                    fm.style.zoom=String(ns);
+                    fmSizeVal.textContent=String(pct);
+                    data.floatUI.meditation.scale=ns;saveData();
+                };
+            }
+        }
+        const format=s=>{const m=Math.floor(s/60),ss=s%60;return `${m.toString().padStart(2,'0')}:${ss.toString().padStart(2,'0')}`};
+        const updateView=()=>{fmTime.textContent=format(timerSeconds)};
+
+        // Float meditation drag
+        let fmDrag=false,fmX=0,fmY=0;
+        fm.addEventListener('pointerdown',e=>{
+            if(e.target.closest('.fm-btn')||e.target.closest('.fm-expand')||e.target.closest('.fm-panel'))return;
+            fmDrag=true;fmX=e.clientX-fm.offsetLeft;fmY=e.clientY-fm.offsetTop;
+            document.addEventListener('pointermove',fmMoveHandler);
+            document.addEventListener('pointerup',fmUpHandler);
+        });
+        function fmMoveHandler(e){if(!fmDrag)return;fm.style.left=(e.clientX-fmX)+'px';fm.style.top=(e.clientY-fmY)+'px';fm.style.right='auto';fm.style.bottom='auto'}
+        function fmUpHandler(){
+            fmDrag=false;
+            if(data.floatUI&&data.floatUI.meditation){
+                data.floatUI.meditation.x=fm.offsetLeft;
+                data.floatUI.meditation.y=fm.offsetTop;
+                saveData();
+            }
+            document.removeEventListener('pointermove',fmMoveHandler);document.removeEventListener('pointerup',fmUpHandler)
+        }
+
+        // Expand/collapse
+        fmExpand.onclick=()=>{
+            fm.classList.toggle('expanded');
+            fmExpand.textContent=fm.classList.contains('expanded')?'▲ 收起':'▼ 更多';
+        };
+
+        // Moon button = start/pause toggle
+        const fmBtn=document.getElementById('fm-btn');
+        fmBtn.onclick=()=>{
+            if(timerRunning){
+                clearInterval(timerInterval);timerRunning=false;fmLabel.textContent='已暂停';
+                fmBtn.innerHTML='<i class="fa fa-moon-o"></i>';
+            }else{
+                timerRunning=true;fmLabel.textContent='冥想中...';
+                fmBtn.innerHTML='<i class="fa fa-pause"></i>';
+                if(noiseCtx&&noiseCtx.state==='suspended')noiseCtx.resume();
+                timerInterval=setInterval(()=>{
+                    if(timerSeconds>0){timerSeconds--;updateView()}
+                    else{clearInterval(timerInterval);timerRunning=false;fmLabel.textContent='已完成 ✨';fmBtn.innerHTML='<i class="fa fa-moon-o"></i>';toast('静心结束 ✨','info');stopNoise()}
+                },1000);
+            }
+        };
+
+        // Noise buttons
+        fm.querySelectorAll('.fm-noise-btn').forEach(btn=>{
+            btn.onclick=()=>{
+                if(activeNoise===btn.dataset.noise){stopNoise();btn.classList.remove('active');return}
+                fm.querySelectorAll('.fm-noise-btn').forEach(b=>b.classList.remove('active'));
+                btn.classList.add('active');
+                startNoise(btn.dataset.noise);
+            };
+        });
+        document.getElementById('fm-volume').oninput=e=>{
+            if(noiseGain)noiseGain.gain.value=e.target.value/100*0.3;
+        };
+
+        // Time pickers
+        fm.querySelectorAll('.fm-ctrl[data-time]').forEach(btn=>{
+            btn.onclick=()=>{
+                const t=parseInt(btn.dataset.time);
+                timerSeconds=t;timerTotal=t;clearInterval(timerInterval);timerRunning=false;updateView();
+                fmLabel.textContent='准备开始';fmBtn.innerHTML='<i class="fa fa-moon-o"></i>';
+            };
+        });
+
+        // Control buttons
+        document.getElementById('fm-start').onclick=()=>{
+            if(timerRunning)return;timerRunning=true;fmLabel.textContent='冥想中...';fmBtn.innerHTML='<i class="fa fa-pause"></i>';
+            if(noiseCtx&&noiseCtx.state==='suspended')noiseCtx.resume();
+            timerInterval=setInterval(()=>{
+                if(timerSeconds>0){timerSeconds--;updateView()}
+                else{clearInterval(timerInterval);timerRunning=false;fmLabel.textContent='已完成 ✨';fmBtn.innerHTML='<i class="fa fa-moon-o"></i>';toast('静心结束 ✨','info');stopNoise()}
+            },1000);
+        };
+        document.getElementById('fm-pause').onclick=()=>{
+            clearInterval(timerInterval);timerRunning=false;fmLabel.textContent='已暂停';fmBtn.innerHTML='<i class="fa fa-moon-o"></i>';
+        };
+        document.getElementById('fm-reset').onclick=()=>{
+            clearInterval(timerInterval);timerRunning=false;timerSeconds=300;timerTotal=300;updateView();
+            fmLabel.textContent='准备开始';fmBtn.innerHTML='<i class="fa fa-moon-o"></i>';stopNoise();
+            fm.querySelectorAll('.fm-noise-btn').forEach(b=>b.classList.remove('active'));
+        };
+        updateView();
+    }
+    </script>
+</body>
+</html>
