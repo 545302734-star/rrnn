@@ -2,110 +2,904 @@
 <html lang="zh-CN">
 <head>
     <meta charset="UTF-8">
-    <title>我的花园日记 · 安全同步版</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <style>
-        * { box-sizing: border-box; margin: 0; padding: 0; }
-        body {
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
-            max-width: 900px;
-            margin: 40px auto;
-            padding: 20px;
-            background: #fafafa;
-        }
-        h1 {
-            color: #2d8cf0;
-            margin-bottom: 20px;
-            text-align: center;
-        }
-        textarea {
-            width: 100%;
-            height: 450px;
-            padding: 20px;
-            font-size: 16px;
-            border: 1px solid #ddd;
-            border-radius: 10px;
-            outline: none;
-            background: white;
-        }
-        .btn-group {
-            display: flex;
-            gap: 12px;
-            margin-top: 15px;
-        }
-        button {
-            flex: 1;
-            padding: 14px;
-            font-size: 16px;
-            border: none;
-            border-radius: 8px;
-            cursor: pointer;
-            font-weight: bold;
-        }
-        #save { background: #2d8cf0; color: white; }
-        #load { background: #4CAF50; color: white; }
-        .tip {
-            margin-top: 15px;
-            color: #666;
-            font-size: 14px;
-            text-align: center;
-        }
-    </style>
-</head>
-<body>
-    <h1>🌿 我的花园日记（安全同步版）</h1>
-    <textarea id="text" placeholder="在这里写内容，保存后所有设备都会同步..."></textarea>
-
-    <div class="btn-group">
-        <button id="save" onclick="promptAndSave()">💾 保存到云端</button>
-        <button id="load" onclick="loadFromCloud()">🔄 刷新最新内容</button>
-    </div>
-
-    <p class="tip">提示：Token 仅保存在你的浏览器中，不会泄露！</p>
-
+    <title>我的显化花园</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdn.jsdelivr.net/npm/font-awesome@4.7.0/css/font-awesome.min.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/interactjs/dist/interact.min.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500;600&family=Noto+Serif+SC:wght@400;500;600&display=swap" rel="stylesheet">
     <script>
-        // 只在这里填你的 Gist ID，Token 不再写进代码
-        const GIST_ID = "f0dfa3a45adad6b4052441c36c5306f6";
-        const FILE_NAME = "garden-data.txt";
-
-        // 页面加载时自动读取
-        window.onload = loadFromCloud;
-
-        // 从云端读取（不需要 Token，公开 Gist 可直接读取）
-        async function loadFromCloud() {
-            try {
-                let res = await fetch(`https://api.github.com/gists/${GIST_ID}`);
-                let data = await res.json();
-                document.getElementById("text").value = data.files[FILE_NAME].content;
-            } catch (e) {
-                console.log("加载失败");
-            }
-        }
-
-        // 保存时才输入 Token，不会泄露到代码里
-        async function promptAndSave() {
-            let token = prompt("请输入你的 GitHub Token（仅本次使用，不会保存）：");
-            if (!token) return;
-
-            let content = document.getElementById("text").value;
-            try {
-                await fetch(`https://api.github.com/gists/${GIST_ID}`, {
-                    method: "PATCH",
-                    headers: {
-                        "Authorization": `token ${token}`,
-                        "Content-Type": "application/json"
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        cream: '#faf7f2', sage: '#a8b5a0', sageLight: '#d4dccf',
+                        gold: '#c9b896', goldLight: '#e6ddd0', paper: '#fdfcf9', earth: '#8b7d6b',
                     },
-                    body: JSON.stringify({
-                        files: {
-                            [FILE_NAME]: { content }
-                        }
-                    })
-                });
-                alert("✅ 保存成功！所有设备已同步！");
-            } catch (e) {
-                alert("❌ 保存失败，请检查 Token 是否正确");
+                    fontFamily: {
+                        serif: ['Playfair Display', 'Noto Serif SC', 'serif'],
+                        sans: ['Inter', 'system-ui', 'sans-serif'],
+                    },
+                }
             }
         }
     </script>
-</body>
-</html>
+    <style>
+        body{font-family:'Noto Serif SC','Playfair Display',serif}
+        .paper-texture{background-image:url("data:image/svg+xml,%3Csvg width='100' height='100' viewBox='0 0 100 100' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.6' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.02'/%3E%3C/svg%3E")}
+        .soft-shadow{box-shadow:0 2px 10px rgba(168,181,160,.08),0 8px 24px rgba(168,181,160,.06)}
+        .leaf-float{animation:float 8s ease-in-out infinite}
+        .leaf-float-delay-1{animation:float 10s ease-in-out infinite;animation-delay:2s}
+        .leaf-float-delay-2{animation:float 9s ease-in-out infinite;animation-delay:4s}
+        .leaf-float-delay-3{animation:float 11s ease-in-out infinite;animation-delay:6s}
+        @keyframes float{0%,100%{transform:translateY(0) rotate(0deg);opacity:.15}50%{transform:translateY(-15px) rotate(8deg);opacity:.25}}
+        .bounce-click{transition:transform .2s cubic-bezier(.34,1.56,.64,1)}
+        .bounce-click:active{transform:scale(.92)}
+        .fade-in{animation:fadeIn .5s ease-out}
+        @keyframes fadeIn{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:translateY(0)}}
+        .slide-up{animation:slideUp .3s ease-out}
+        @keyframes slideUp{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:translateY(0)}}
+        .counter-ring{width:200px;height:200px;border-radius:50%;background:conic-gradient(#a8b5a0 var(--pct,0%),#d4dccf var(--pct,0%));display:flex;align-items:center;justify-content:center;position:relative}
+        .counter-ring::before{content:'';position:absolute;width:170px;height:170px;border-radius:50%;background:#fdfcf9}
+        .counter-ring .inner{position:relative;z-index:1;text-align:center}
+        .timer-ring{width:240px;height:240px;border-radius:50%;background:conic-gradient(#a8b5a0 var(--timer-pct,100%),#d4dccf var(--timer-pct,100%));display:flex;align-items:center;justify-content:center;position:relative}
+        .timer-ring::before{content:'';position:absolute;width:210px;height:210px;border-radius:50%;background:#fdfcf9}
+        .timer-ring .inner{position:relative;z-index:1;text-align:center}
+        .breathing{animation:breathe 4s ease-in-out infinite}
+        @keyframes breathe{0%,100%{transform:scale(1);opacity:.8}50%{transform:scale(1.05);opacity:1}}
+        .vision-board{display:grid;grid-template-columns:repeat(8,1fr);grid-auto-rows:80px;grid-auto-flow:dense;gap:8px;background:linear-gradient(135deg,rgba(168,181,160,.06),rgba(212,220,207,.1));border-radius:16px;padding:12px;min-height:800px;position:relative}
+        .vision-board::before{content:'';position:absolute;inset:0;border-radius:16px;background-image:url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M30 5 C32 15 38 20 45 22 C38 24 32 29 30 40 C28 29 22 24 15 22 C22 20 28 15 30 5Z' fill='rgba(168,181,160,0.03)'/%3E%3C/svg%3E");pointer-events:none;z-index:0}
+        .vision-block{border-radius:10px;overflow:hidden;position:relative;animation:blockDrop .4s cubic-bezier(.34,1.56,.64,1) forwards;opacity:0;cursor:grab;transition:box-shadow .2s,transform .2s;user-select:none;-webkit-user-select:none;-webkit-user-drag:none;z-index:1}
+        .vision-block:active{cursor:grabbing}
+        .vision-block:hover{box-shadow:0 6px 24px rgba(0,0,0,.12);transform:translateY(-1px)}
+        .vision-block.dragging{opacity:.6;z-index:100;box-shadow:0 12px 40px rgba(0,0,0,.25);transform:scale(1.03)}
+        @keyframes blockDrop{0%{opacity:0;transform:translateY(-20px)}70%{opacity:1;transform:translateY(2px)}100%{opacity:1;transform:translateY(0)}}
+        .vision-block img{width:100%;height:100%;object-fit:cover;display:block;pointer-events:none;user-select:none;-webkit-user-drag:none}
+        .vision-block .block-tag{position:absolute;top:4px;left:4px;padding:2px 8px;border-radius:6px;font-size:10px;opacity:0;transition:opacity .2s;z-index:2;font-weight:500}
+        .vision-block:hover .block-tag{opacity:1}
+        .vision-block .del-block{position:absolute;top:4px;right:4px;width:20px;height:20px;border-radius:50%;background:rgba(0,0,0,.35);color:#fff;display:flex;align-items:center;justify-content:center;font-size:9px;opacity:0;transition:opacity .2s;cursor:pointer;z-index:2}
+        .vision-block:hover .del-block{opacity:1}
+        .vision-block .del-block:hover{background:rgba(220,38,38,.7)}
+        .vision-block .resize-handle{position:absolute;bottom:0;right:0;width:24px;height:24px;cursor:nwse-resize;opacity:0;transition:opacity .2s;z-index:2;background:linear-gradient(135deg,transparent 50%,rgba(255,255,255,.3) 50%)}
+        .vision-block:hover .resize-handle{opacity:1}
+        .vision-block .resize-handle::after{content:'';position:absolute;bottom:3px;right:3px;width:8px;height:8px;border-right:2px solid rgba(255,255,255,.7);border-bottom:2px solid rgba(255,255,255,.7)}
+        .vision-block .resize-right{position:absolute;top:0;right:0;width:6px;height:100%;cursor:ew-resize;opacity:0;transition:opacity .2s;z-index:2}
+        .vision-block:hover .resize-right{opacity:1;background:linear-gradient(90deg,transparent,rgba(255,255,255,.15))}
+        .vision-block .resize-bottom{position:absolute;bottom:0;left:0;width:100%;height:6px;cursor:ns-resize;opacity:0;transition:opacity .2s;z-index:2}
+        .vision-block:hover .resize-bottom{opacity:1;background:linear-gradient(180deg,transparent,rgba(255,255,255,.15))}
+        .vision-block .img-overlay{position:absolute;bottom:0;left:0;right:0;top:0;display:flex;align-items:flex-end;padding:12px 10px 8px;background:linear-gradient(transparent 40%,rgba(0,0,0,.4));color:#fff;font-family:'Playfair Display','Noto Serif SC',serif;line-height:1.3;word-break:break-word;cursor:pointer;z-index:1;text-shadow:0 1px 4px rgba(0,0,0,.5)}
+        .text-block{display:flex;align-items:center;justify-content:center;text-align:center;padding:10px;word-break:break-word;line-height:1.4;letter-spacing:.5px;height:100%;min-height:100%}
+        .text-block .aff-ref{position:absolute;bottom:3px;right:6px;font-size:8px;opacity:.5;color:inherit}
+        .vision-board .leaf-deco{position:absolute;font-size:14px;opacity:.08;pointer-events:none;z-index:0;animation:leafSway 6s ease-in-out infinite}
+        @keyframes leafSway{0%,100%{transform:rotate(0deg) translateY(0)}50%{transform:rotate(8deg) translateY(-3px)}}
+        .noise-btn.active{background:rgba(168,181,160,.25)!important;color:#8b7d6b!important;font-weight:500}
+        @media(max-width:640px){.vision-board{grid-template-columns:repeat(4,1fr);grid-auto-rows:60px}}
+        .aff-card{background:rgba(168,181,160,.06);border:1px solid rgba(168,181,160,.12);border-radius:10px;padding:10px 12px;display:flex;justify-content:space-between;align-items:center;gap:8px;transition:all .2s}
+        .aff-card:hover{background:rgba(168,181,160,.12);border-color:rgba(168,181,160,.2)}
+        .aff-card.dragging{opacity:.55;transform:scale(.98)}
+        .aff-card.drag-over{border-color:rgba(168,181,160,.55);box-shadow:0 0 0 2px rgba(168,181,160,.2) inset}
+        .vine-border{position:relative}
+        .vine-border::before{content:'';position:absolute;top:-10px;left:-10px;right:-10px;bottom:-10px;border:1px solid rgba(168,181,160,.2);border-radius:24px;pointer-events:none}
+        .sub-card{transition:all .3s ease}
+        .sub-card:hover{transform:translateY(-3px);box-shadow:0 8px 20px rgba(168,181,160,.12)}
+        .confetti{position:fixed;width:8px;height:8px;border-radius:50%;opacity:0;animation:confetti-fall 4s ease-out forwards}
+        @keyframes confetti-fall{0%{transform:translateY(-100vh) rotate(0deg);opacity:1}100%{transform:translateY(100vh) rotate(720deg);opacity:0}}
+        .toast-container{position:fixed;top:20px;right:20px;z-index:9999;display:flex;flex-direction:column;gap:8px}
+        .toast{padding:12px 20px;border-radius:12px;color:#fff;font-size:14px;animation:toastIn .3s ease-out,toastOut .3s ease-in 2.7s forwards;box-shadow:0 4px 12px rgba(0,0,0,.15);max-width:320px}
+        .toast.success{background:linear-gradient(135deg,#a8b5a0,#8b9d82)}
+        .toast.info{background:linear-gradient(135deg,#c9b896,#b5a47e)}
+        .toast.warn{background:linear-gradient(135deg,#e8a87c,#d4915a)}
+        @keyframes toastIn{from{opacity:0;transform:translateX(40px)}to{opacity:1;transform:translateX(0)}}
+        @keyframes toastOut{from{opacity:1}to{opacity:0;transform:translateY(-10px)}}
+        .modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:9000;display:flex;align-items:center;justify-content:center;padding:16px;animation:fadeIn .2s ease-out}
+        .modal-box{background:#fdfcf9;border-radius:20px;padding:28px;max-width:420px;width:100%;box-shadow:0 20px 60px rgba(0,0,0,.2);animation:slideUp .3s ease-out}
+        .tab-btn{position:relative}
+        .tab-btn.active::after{content:'';position:absolute;bottom:-4px;left:50%;transform:translateX(-50%);width:30px;height:3px;background:#a8b5a0;border-radius:2px}
+        ::-webkit-scrollbar{width:6px}
+        ::-webkit-scrollbar-track{background:transparent}
+        ::-webkit-scrollbar-thumb{background:#d4dccf;border-radius:3px}
+        ::-webkit-scrollbar-thumb:hover{background:#a8b5a0}
+        .pulse-ring{position:absolute;border-radius:50%;border:2px solid #a8b5a0;animation:pulseRing .6s ease-out forwards;pointer-events:none}
+        @keyframes pulseRing{0%{width:100%;height:100%;opacity:.8}100%{width:160%;height:160%;opacity:0}}
+        .aff-progress{height:4px;border-radius:2px;background:#d4dccf;overflow:hidden;margin-top:6px}
+        .aff-progress-bar{height:100%;border-radius:2px;transition:width .3s}
+        .aff-card.selected{background:rgba(168,181,160,.18);border-color:rgba(168,181,160,.35)}
+        .mini-player{position:fixed;bottom:20px;left:20px;z-index:8000;background:#fdfcf9;border-radius:12px;box-shadow:0 4px 20px rgba(0,0,0,.12);overflow:hidden;transition:all .3s}
+        .mini-player.expanded{width:320px;height:180px}
+        .mini-player.collapsed{width:48px;height:48px;border-radius:50%;cursor:pointer}
+        .mini-player.collapsed:hover{transform:scale(1.1)}
+        .mini-player iframe{width:100%;height:130px;border:none;border-radius:8px}
+        .color-shift{animation:blockDrop .4s cubic-bezier(.34,1.56,.64,1) forwards,colorShift 12s ease-in-out .4s infinite}
+        @keyframes colorShift{0%,100%{filter:hue-rotate(0deg)}50%{filter:hue-rotate(30deg)}}
+        .float-counter{position:fixed;top:20px;right:20px;z-index:7000;background:#fdfcf9;border-radius:16px;box-shadow:0 4px 20px rgba(0,0,0,.1);padding:12px 16px;user-select:none;transition:box-shadow .2s}
+        .float-counter .fc-panel{display:none;margin-top:10px;padding-top:10px;border-top:1px solid rgba(168,181,160,.15)}
+        .float-counter.expanded .fc-panel{display:block}
+        .float-counter:hover{box-shadow:0 8px 30px rgba(0,0,0,.15)}
+        .float-counter .fc-count{font-size:28px;font-weight:700;color:#8b7d6b}
+        .float-counter .fc-label{font-size:10px;color:#a8b5a0}
+        .float-counter .fc-btn{width:36px;height:36px;border-radius:50%;background:#a8b5a0;color:#fff;border:none;cursor:pointer;font-size:14px;display:flex;align-items:center;justify-content:center;transition:transform .15s}
+        .float-counter .fc-btn:active{transform:scale(.9)}
+        .float-counter .fc-expand{font-size:11px;color:#a8b5a0;cursor:pointer;margin-top:6px;text-align:center;padding:4px 0;border-radius:6px;transition:background .15s}
+        .float-counter .fc-expand:hover{background:rgba(168,181,160,.1);color:#8b7d6b}
+        .float-counter .fc-panel{margin-top:10px;padding-top:10px;border-top:1px solid rgba(168,181,160,.15)}
+        .float-counter .fc-panel button{display:block;width:100%;text-align:left;padding:4px 8px;border-radius:6px;font-size:11px;color:#8b7d6b;background:none;border:none;cursor:pointer}
+        .float-counter .fc-panel button:hover{background:rgba(168,181,160,.1)}
+        .float-counter .fc-stats{display:flex;gap:8px;margin-top:6px}
+        .float-counter .fc-stats span{font-size:10px;color:#a8b5a0}
+        .float-meditation{position:fixed;bottom:20px;left:20px;z-index:7000;background:#fdfcf9;border-radius:16px;box-shadow:0 4px 20px rgba(0,0,0,.1);padding:12px 16px;user-select:none;transition:box-shadow .2s}
+        .float-meditation:hover{box-shadow:0 8px 30px rgba(0,0,0,.15)}
+        .float-meditation .fm-panel{display:none;margin-top:10px;padding-top:10px;border-top:1px solid rgba(168,181,160,.15)}
+        .float-meditation.expanded .fm-panel{display:block}
+        .float-meditation .fm-time{font-size:24px;font-weight:700;color:#8b7d6b;font-family:'Playfair Display','Noto Serif SC',serif}
+        .float-meditation .fm-label{font-size:10px;color:#a8b5a0}
+        .float-meditation .fm-btn{width:36px;height:36px;border-radius:50%;background:#a8b5a0;color:#fff;border:none;cursor:pointer;font-size:14px;display:flex;align-items:center;justify-content:center;transition:transform .15s}
+        .float-meditation .fm-btn:active{transform:scale(.9)}
+        .float-meditation .fm-expand{font-size:11px;color:#a8b5a0;cursor:pointer;margin-top:6px;text-align:center;padding:4px 0;border-radius:6px;transition:background .15s}
+        .float-meditation .fm-expand:hover{background:rgba(168,181,160,.1);color:#8b7d6b}
+        .float-meditation button.fm-ctrl{padding:4px 10px;border-radius:8px;font-size:11px;border:none;cursor:pointer;transition:background .15s}
+        .float-meditation .fm-noise-btn{padding:3px 8px;border-radius:6px;font-size:10px;border:none;cursor:pointer;background:rgba(168,181,160,.1);color:#8b7d6b;transition:all .15s}
+        .float-meditation .fm-noise-btn.active{background:rgba(168,181,160,.25);color:#5b6d53;font-weight:500}
+        .theme-btn{width:28px;height:28px;border-radius:50%;border:2px solid transparent;cursor:pointer;transition:all .2s}
+        .theme-btn.active{border-color:#8b7d6b;box-shadow:0 0 0 2px rgba(139,125,107,.3)}
+        .theme-bar{position:fixed;bottom:20px;right:20px;z-index:7001;display:flex;gap:6px;background:#fdfcf9;padding:8px 12px;border-radius:20px;box-shadow:0 2px 12px rgba(0,0,0,.08)}
+        .sub-player-wrap{margin-top:8px;border-radius:8px;overflow:hidden;background:#000}
+        .sub-player-wrap iframe{width:100%;height:180px;border:none}
+        .hero-banner-wrap{position:relative;z-index:10;width:100vw;left:50%;transform:translateX(-50%);padding:0;margin:0 0 14px}
+        .hero-banner{position:relative;width:100%;aspect-ratio:8/1;border-radius:0;overflow:hidden;background:linear-gradient(135deg,rgba(168,181,160,.55),rgba(212,220,207,.65),rgba(201,184,150,.55));border-top:1px solid rgba(168,181,160,.2);border-bottom:1px solid rgba(168,181,160,.2)}
+        .hero-banner img{width:100%;height:100%;object-fit:cover;display:block}
+        .hero-banner .hero-actions{position:absolute;right:10px;bottom:10px;display:flex;gap:8px;z-index:2}
+        .hero-banner .hero-btn{padding:6px 10px;border-radius:999px;font-size:12px;line-height:1;background:rgba(0,0,0,.35);color:#fff;border:1px solid rgba(255,255,255,.25);cursor:pointer}
+        .hero-banner .hero-btn:hover{background:rgba(0,0,0,.48)}
+        .swatch-grid{display:grid;grid-template-columns:repeat(8,minmax(0,1fr));gap:8px}
+        .swatch-btn{width:100%;aspect-ratio:1/1;border-radius:8px;border:2px solid transparent;cursor:pointer;transition:transform .15s,border-color .15s,box-shadow .15s}
+        .swatch-btn:hover{transform:translateY(-1px)}
+        .swatch-btn.active{border-color:#8b7d6b;box-shadow:0 0 0 2px rgba(139,125,107,.25)}
+    </style>
+</head>
+<body class="bg-cream paper-texture min-h-screen overflow-x-hidden">
+    <div class="fixed inset-0 pointer-events-none z-0">
+        <div class="absolute top-16 left-8 text-sage leaf-float text-3xl"><i class="fa fa-leaf"></i></div>
+        <div class="absolute top-32 right-12 text-sage leaf-float-delay-1 text-2xl"><i class="fa fa-leaf"></i></div>
+        <div class="absolute bottom-40 left-16 text-sage leaf-float-delay-2 text-xl"><i class="fa fa-envira"></i></div>
+        <div class="absolute bottom-24 right-20 text-sage leaf-float-delay-3 text-2xl"><i class="fa fa-leaf"></i></div>
+        <div class="absolute top-1/2 left-4 text-sage leaf-float text-lg"><i class="fa fa-leaf"></i></div>
+        <div class="absolute top-1/3 right-8 text-sage leaf-float-delay-1 text-lg"><i class="fa fa-envira"></i></div>
+    </div>
+    <div class="toast-container" id="toast-container"></div>
+    <div class="hero-banner-wrap">
+        <div id="hero-banner" class="hero-banner soft-shadow">
+            <img id="hero-banner-img" alt="花园顶部图片" class="hidden">
+            <div class="hero-actions">
+                <label class="hero-btn">更换图片<input type="file" id="hero-image-input" accept="image/*" class="hidden"></label>
+                <button id="hero-image-reset" class="hero-btn">恢复默认</button>
+            </div>
+        </div>
+    </div>
+    <header class="py-6 md:py-8 text-center relative z-10">
+        <h1 class="text-3xl md:text-5xl font-serif text-earth mb-3 tracking-wide">我的显化花园</h1>
+        <p class="text-sage italic text-base md:text-lg font-light">"The universe is conspiring in your favor."</p>
+    </header>
+    <nav class="max-w-6xl mx-auto px-4 mb-3 md:mb-4 relative z-10">
+        <div class="flex flex-wrap justify-center gap-2 md:gap-4">
+            <button class="tab-btn active bg-paper soft-shadow px-3 md:px-4 py-1.5 md:py-2 rounded-lg border border-sage/10 text-sage transition-all duration-300 text-xs md:text-sm" data-tab="counter"><i class="fa fa-heart-o mr-1"></i>显化中心</button>
+            <button class="tab-btn bg-paper soft-shadow px-3 md:px-4 py-1.5 md:py-2 rounded-lg border border-sage/10 text-earth hover:text-sage transition-all duration-300 text-xs md:text-sm" data-tab="vision"><i class="fa fa-picture-o mr-1"></i>愿景花园</button>
+            <button class="tab-btn bg-paper soft-shadow px-3 md:px-4 py-1.5 md:py-2 rounded-lg border border-sage/10 text-earth hover:text-sage transition-all duration-300 text-xs md:text-sm" data-tab="subs"><i class="fa fa-headphones mr-1"></i>酥饼仓库</button>
+            <button class="tab-btn bg-paper soft-shadow px-3 md:px-4 py-1.5 md:py-2 rounded-lg border border-sage/10 text-earth hover:text-sage transition-all duration-300 text-xs md:text-sm" data-tab="gratitude"><i class="fa fa-book mr-1"></i>感恩日记</button>
+            <button class="tab-btn bg-paper soft-shadow px-3 md:px-4 py-1.5 md:py-2 rounded-lg border border-sage/10 text-earth hover:text-sage transition-all duration-300 text-xs md:text-sm" data-tab="knowledge"><i class="fa fa-bookmark-o mr-1"></i>显化知识库</button>
+        </div>
+    </nav>
+    <!-- 浮动计数器 -->
+    <div id="float-counter" class="float-counter">
+        <div class="flex items-center gap-3">
+            <button id="fc-btn" class="fc-btn"><i class="fa fa-heart"></i></button>
+            <div>
+                <div class="fc-count" id="fc-count">0</div>
+                <div class="fc-label">今日 / <span id="fc-goal">108</span></div>
+            </div>
+        </div>
+        <div class="fc-expand" id="fc-expand">▼ 更多</div>
+        <div class="fc-panel" id="fc-panel">
+            <div class="mb-2">
+                <label class="text-[10px] text-sage block mb-1">点击累积到</label>
+                <select id="fc-aff-select" class="w-full px-2 py-1 rounded-md border border-sage/20 bg-white/70 text-xs text-earth focus:outline-none focus:border-sage">
+                    <option value="">不指定A句（仅总计）</option>
+                </select>
+            </div>
+            <div class="mb-2">
+                <label class="text-[10px] text-sage block mb-1">浮动框大小: <span id="fc-size-val">100</span>%</label>
+                <input type="range" id="fc-size" min="80" max="150" value="100" class="w-full accent-sage" style="height:4px">
+            </div>
+            <div class="fc-stats"><span>本周: <b id="fc-week">0</b></span><span>总计: <b id="fc-total">0</b></span></div>
+            <button id="fc-set-goal"><i class="fa fa-bullseye mr-1"></i>设定目标</button>
+            <button id="fc-reset"><i class="fa fa-refresh mr-1"></i>重置今日</button>
+        </div>
+    </div>
+    <!-- 浮动静心时刻 -->
+    <div id="float-meditation" class="float-meditation">
+        <div class="flex items-center gap-3">
+            <button id="fm-btn" class="fm-btn"><i class="fa fa-moon-o"></i></button>
+            <div>
+                <div class="fm-time" id="fm-time">05:00</div>
+                <div class="fm-label" id="fm-label">准备开始</div>
+            </div>
+        </div>
+        <div class="fm-expand" id="fm-expand">▼ 更多</div>
+        <div class="fm-panel" id="fm-panel">
+            <div class="mb-2">
+                <label class="text-[10px] text-sage block mb-1">浮动框大小: <span id="fm-size-val">100</span>%</label>
+                <input type="range" id="fm-size" min="80" max="150" value="100" class="w-full accent-sage" style="height:4px">
+            </div>
+            <div class="flex flex-wrap gap-1 mb-2">
+                <button class="fm-noise-btn" data-noise="rain"><i class="fa fa-tint"></i> 雨</button>
+                <button class="fm-noise-btn" data-noise="ocean"><i class="fa fa-water"></i> 海</button>
+                <button class="fm-noise-btn" data-noise="forest"><i class="fa fa-tree"></i> 林</button>
+                <button class="fm-noise-btn" data-noise="fire"><i class="fa fa-fire"></i> 火</button>
+                <button class="fm-noise-btn" data-noise="wind"><i class="fa fa-wind"></i> 风</button>
+            </div>
+            <div class="flex items-center gap-1 mb-2">
+                <i class="fa fa-volume-down text-sage text-xs"></i>
+                <input type="range" id="fm-volume" min="0" max="100" value="40" class="w-20 accent-sage" style="height:4px">
+                <i class="fa fa-volume-up text-sage text-xs"></i>
+            </div>
+            <div class="flex flex-wrap gap-1 mb-2">
+                <button class="fm-ctrl" style="background:rgba(168,181,160,.15);color:#8b7d6b" data-time="300">5分</button>
+                <button class="fm-ctrl" style="background:rgba(168,181,160,.15);color:#8b7d6b" data-time="600">10分</button>
+                <button class="fm-ctrl" style="background:rgba(168,181,160,.15);color:#8b7d6b" data-time="900">15分</button>
+                <button class="fm-ctrl" style="background:rgba(168,181,160,.15);color:#8b7d6b" data-time="1800">30分</button>
+            </div>
+            <div class="flex gap-2">
+                <button id="fm-start" class="fm-ctrl" style="background:#a8b5a0;color:#fff"><i class="fa fa-play"></i> 开始</button>
+                <button id="fm-pause" class="fm-ctrl" style="background:rgba(201,184,150,.5);color:#fff"><i class="fa fa-pause"></i></button>
+                <button id="fm-reset" class="fm-ctrl" style="background:rgba(139,125,107,.3);color:#fff"><i class="fa fa-refresh"></i></button>
+            </div>
+        </div>
+    </div>
+    <div class="theme-bar" id="theme-bar">
+        <button class="theme-btn active" data-theme="sage" style="background:#a8b5a0" title="鼠尾草"></button>
+        <button class="theme-btn" data-theme="rose" style="background:#c9a0a0" title="玫瑰"></button>
+        <button class="theme-btn" data-theme="ocean" style="background:#8ba8b5" title="海洋"></button>
+        <button class="theme-btn" data-theme="sunset" style="background:#c9a870" title="日落"></button>
+        <button class="theme-btn" data-theme="lavender" style="background:#a8a0c9" title="薰衣草"></button>
+        <button class="theme-btn" data-theme="forest" style="background:#6b8f6b" title="森林"></button>
+    </div>
+    <main class="max-w-6xl mx-auto px-3 md:px-4 pb-20 relative z-10">
+        <!-- 显化中心 -->
+        <section id="counter" class="tab-content active fade-in">
+            <div class="bg-paper soft-shadow rounded-2xl p-6 md:p-10 vine-border">
+                <div class="bg-sageLight/20 rounded-xl p-5 md:p-6 mb-6 md:mb-8 text-center">
+                    <p class="text-sm text-sage mb-3">✨ 今日显化句 ✨</p>
+                    <p id="random-affirmation" class="text-lg md:text-xl font-serif text-earth italic min-h-[60px] flex items-center justify-center leading-relaxed">我值得拥有所有美好的事物</p>
+                    <button id="next-affirmation" class="mt-4 px-4 py-1.5 bg-white rounded-full text-sm text-sage hover:text-earth transition-colors"><i class="fa fa-refresh mr-1"></i>换一条</button>
+                </div>
+                <div class="flex flex-wrap gap-2 mb-4 items-center" id="category-container">
+                    <button class="category-btn active px-3 py-1.5 bg-sage/10 text-sage rounded-full text-sm" data-category="all">全部</button>
+                    <button id="add-category" class="px-3 py-1.5 bg-sageLight/20 text-earth rounded-full text-sm hover:bg-sageLight/30 transition-colors"><i class="fa fa-plus mr-1"></i>添加分类</button>
+                    <button id="manage-categories" class="px-3 py-1.5 bg-sageLight/20 text-earth rounded-full text-sm hover:bg-sageLight/30 transition-colors"><i class="fa fa-cog mr-1"></i>管理分类</button>
+                </div>
+                <div class="flex flex-col sm:flex-row gap-2 mb-4">
+                    <input type="text" id="new-affirmation" placeholder="输入你的显化句..." class="flex-1 px-4 py-2.5 rounded-lg border border-sage/20 focus:outline-none focus:border-sage bg-white/50 text-sm">
+                    <div class="flex gap-2">
+                        <select id="affirmation-category" class="px-3 py-2.5 rounded-lg border border-sage/20 focus:outline-none focus:border-sage bg-white/50 text-sm">
+                            <option value="财富">财富</option><option value="事业">事业</option><option value="健康">健康</option><option value="关系">关系</option><option value="自我成长">自我成长</option>
+                        </select>
+                        <button id="add-affirmation" class="px-4 py-2.5 bg-sage text-white rounded-lg hover:bg-sage/90 transition-colors text-sm whitespace-nowrap">添加</button>
+                    </div>
+                </div>
+                <div id="affirmations-list" class="grid grid-cols-1 md:grid-cols-2 gap-3 max-h-[500px] overflow-y-auto pr-1"></div>
+            </div>
+        </section>
+        <!-- 愿景花园 -->
+        <section id="vision" class="tab-content hidden fade-in">
+            <div class="bg-paper soft-shadow rounded-2xl p-4 md:p-8 vine-border" style="max-width:100%">
+                <div class="flex flex-wrap justify-between items-center mb-4 md:mb-6 gap-3">
+                    <h2 class="text-xl md:text-2xl font-serif text-earth">我的愿景花园</h2>
+                    <div class="flex flex-wrap gap-2 items-center">
+                        <select id="vision-category" class="px-2 py-1.5 rounded-lg border border-sage/20 focus:outline-none focus:border-sage bg-white/50 text-sm">
+                            <option value="财富">财富</option><option value="事业">事业</option><option value="健康">健康</option><option value="关系">关系</option><option value="自我成长">自我成长</option>
+                        </select>
+                        <label class="px-3 py-1.5 bg-sage text-white rounded-lg cursor-pointer hover:bg-sage/90 transition-colors text-sm"><i class="fa fa-upload mr-1"></i>添加图片<input type="file" id="upload-image" accept="image/*" class="hidden" multiple></label>
+                        <button id="export-wordless" class="px-3 py-1.5 bg-sageLight/30 text-earth rounded-lg hover:bg-sageLight/50 transition-colors text-sm"><i class="fa fa-external-link mr-1"></i>导出无字板</button>
+                    </div>
+                </div>
+                <div id="vision-board" class="vision-board min-h-[600px]" style="width:100%">
+                    <div id="empty-vision" class="flex flex-col items-center justify-center text-sage py-16" style="grid-column:1/-1">
+                        <i class="fa fa-picture-o text-5xl mb-4 opacity-30"></i>
+                        <p class="text-lg">上传你的愿景图片，让梦想可视化</p>
+                        <p class="text-sm mt-2 opacity-70">显化句会自动出现在这里</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+        <!-- 显化知识库 -->
+        <section id="knowledge" class="tab-content hidden fade-in">
+            <div class="bg-paper soft-shadow rounded-2xl p-4 md:p-8 vine-border" style="max-width:100%">
+                <div class="flex flex-wrap justify-between items-center mb-4 md:mb-6 gap-3">
+                    <h2 class="text-xl md:text-2xl font-serif text-earth">📚 显化知识库</h2>
+                    <div class="flex flex-wrap gap-2 items-center">
+                        <select id="knowledge-category" class="px-2 py-1.5 rounded-lg border border-sage/20 focus:outline-none focus:border-sage bg-white/50 text-sm">
+                            <option value="all">全部</option>
+                        </select>
+                        <button id="add-knowledge" class="px-3 py-1.5 bg-sage text-white rounded-lg hover:bg-sage/90 transition-colors text-sm"><i class="fa fa-plus mr-1"></i>添加知识卡片</button>
+                    </div>
+                </div>
+                <div id="knowledge-board" class="vision-board min-h-[600px]" style="width:100%">
+                    <div id="empty-knowledge" class="flex flex-col items-center justify-center text-sage py-16" style="grid-column:1/-1">
+                        <i class="fa fa-lightbulb-o text-5xl mb-4 opacity-30"></i>
+                        <p class="text-lg">把你学到的显化知识放在这里</p>
+                        <p class="text-sm mt-2 opacity-70">支持自由排列与来源链接</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+        <!-- 酥饼仓库 -->
+        <section id="subs" class="tab-content hidden fade-in">
+            <div class="bg-paper soft-shadow rounded-2xl p-4 md:p-8 vine-border">
+                <div class="flex justify-between items-center mb-4 md:mb-6"><h2 class="text-xl md:text-2xl font-serif text-earth">🍪 酥饼仓库</h2></div>
+                <div class="bg-sageLight/10 rounded-xl p-4 md:p-5 mb-6">
+                    <h3 class="text-base md:text-lg font-serif text-earth mb-3">添加新酥饼</h3>
+                    <div class="grid grid-cols-1 md:grid-cols-12 gap-2 md:gap-3">
+                        <input type="text" id="sub-title" placeholder="酥饼名称" class="md:col-span-4 px-4 py-2.5 rounded-lg border border-sage/20 focus:outline-none focus:border-sage bg-white/50 text-sm">
+                        <input type="url" id="sub-url" placeholder="B站链接" class="md:col-span-5 px-4 py-2.5 rounded-lg border border-sage/20 focus:outline-none focus:border-sage bg-white/50 text-sm">
+                        <select id="sub-category" class="md:col-span-2 px-3 py-2.5 rounded-lg border border-sage/20 focus:outline-none focus:border-sage bg-white/50 text-sm">
+                        </select>
+                        <button id="add-sub" class="md:col-span-1 px-4 py-2.5 bg-sage text-white rounded-lg hover:bg-sage/90 transition-colors text-sm">添加</button>
+                    </div>
+                </div>
+                <div class="flex flex-wrap gap-2 mb-4" id="sub-category-container">
+                    <button class="sub-category-btn active px-3 py-1.5 bg-sage/10 text-sage rounded-full text-sm" data-subcat="all">全部</button>
+                    <button id="add-sub-category" class="hidden"></button>
+                </div>
+                <div id="subs-list" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4"></div>
+            </div>
+        </section>
+        <!-- 感恩日记 -->
+        <section id="gratitude" class="tab-content hidden fade-in">
+            <div class="bg-paper soft-shadow rounded-2xl p-4 md:p-8 vine-border">
+                <div class="flex justify-between items-center mb-4 md:mb-6">
+                    <h2 class="text-xl md:text-2xl font-serif text-earth">📜 感恩日记</h2>
+                </div>
+                <!-- 发帖输入框 -->
+                <div class="bg-white/60 rounded-xl p-4 mb-6 soft-shadow">
+                    <div class="flex items-start gap-3">
+                        <div class="w-10 h-10 rounded-full bg-sage/20 flex items-center justify-center text-sage flex-shrink-0"><i class="fa fa-user"></i></div>
+                        <div class="flex-1">
+                            <textarea id="gratitude-content" rows="3" class="w-full p-3 rounded-lg border border-sage/15 focus:outline-none focus:border-sage bg-white/70 resize-none text-sm placeholder-sage/40" placeholder="今天感恩什么？写下你的心情..."></textarea>
+                            <div class="flex items-center justify-between mt-2">
+                                <div class="flex gap-2 flex-wrap">
+                                    <select id="gratitude-mood" class="px-2 py-1 rounded-lg border border-sage/15 focus:outline-none focus:border-sage bg-white/50 text-xs text-sage">
+                                        <option value="😊">😊 开心</option><option value="😌">😌 平静</option><option value="🥰">🥰 感动</option><option value="💪">💪 充实</option><option value="🙏">🙏 感恩</option><option value="✨">✨ 喜悦</option>
+                                    </select>
+                                    <div id="gratitude-tags" class="flex flex-wrap gap-1"></div>
+                                </div>
+                                <button id="save-gratitude" class="px-4 py-1.5 bg-sage text-white rounded-lg hover:bg-sage/90 transition-colors text-sm"><i class="fa fa-paper-plane mr-1"></i>发布</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="flex flex-wrap gap-2 mb-4" id="gratitude-filter">
+                    <button class="gra-filter-btn active px-3 py-1.5 bg-sage/10 text-sage rounded-full text-sm" data-filter="all">全部</button>
+                </div>
+                <div id="gratitude-list" class="space-y-4 max-h-[600px] md:max-h-[700px] overflow-y-auto pr-1"></div>
+            </div>
+        </section>
+    </main>
+    <footer class="max-w-6xl mx-auto px-4 pb-8 relative z-10">
+        <div class="flex flex-wrap justify-center gap-3 mb-6">
+            <button onclick="exportData()" class="px-4 py-2 bg-sageLight/30 text-earth rounded-lg hover:bg-sageLight/50 transition-colors text-sm"><i class="fa fa-download mr-1"></i>导出数据</button>
+            <label class="px-4 py-2 bg-sageLight/30 text-earth rounded-lg hover:bg-sageLight/50 transition-colors text-sm cursor-pointer"><i class="fa fa-upload mr-1"></i>导入数据<input type="file" accept=".json" class="hidden" onchange="importData(event)"></label>
+            <button onclick="showConfirm('确定清空所有数据？此操作不可恢复！',()=>{resetAllData()})" class="px-4 py-2 bg-red-50 text-red-400 rounded-lg hover:bg-red-100 transition-colors text-sm"><i class="fa fa-trash-o mr-1"></i>清空数据</button>
+        </div>
+        <p class="text-center text-sage/50 text-xs italic">"What you seek is seeking you." — Rumi</p>
+    </footer>
+
+    <script>
+        // 数据存储核心对象
+        const GardenData = {
+            // 初始化默认数据结构
+            init() {
+                const defaultData = {
+                    affirmations: [ // 显化句列表
+                        { id: 1, text: '我值得拥有所有美好的事物', category: '自我成长', count: 0, createTime: new Date().toISOString() },
+                        { id: 2, text: '财富源源不断地流向我', category: '财富', count: 0, createTime: new Date().toISOString() },
+                        { id: 3, text: '我的事业蒸蒸日上', category: '事业', count: 0, createTime: new Date().toISOString() },
+                        { id: 4, text: '我拥有健康的身体和积极的心态', category: '健康', count: 0, createTime: new Date().toISOString() },
+                        { id: 5, text: '我拥有充满爱的人际关系', category: '关系', count: 0, createTime: new Date().toISOString() }
+                    ],
+                    categories: ['财富', '事业', '健康', '关系', '自我成长'], // 分类列表
+                    visionBoard: [], // 愿景花园数据
+                    knowledgeBoard: [], // 显化知识库数据
+                    subs: [], // 酥饼仓库数据
+                    subCategories: ['显化', '冥想', '疗愈', '成长'], // 酥饼分类
+                    gratitude: [], // 感恩日记数据
+                    counter: { // 计数器数据
+                        today: 0,
+                        goal: 108,
+                        week: 0,
+                        total: 0,
+                        lastReset: new Date().toISOString().split('T')[0]
+                    },
+                    heroBanner: { // 顶部banner数据
+                        customImage: '',
+                        useDefault: true
+                    },
+                    theme: 'sage', // 当前主题
+                    meditation: { // 冥想计时器数据
+                        time: 300,
+                        isRunning: false,
+                        currentTime: 300,
+                        noise: '',
+                        volume: 40
+                    }
+                };
+
+                // 如果本地存储无数据，初始化默认数据
+                if (!localStorage.getItem('gardenData')) {
+                    this.save(defaultData);
+                }
+                return this.load();
+            },
+
+            // 加载数据
+            load() {
+                try {
+                    const data = JSON.parse(localStorage.getItem('gardenData') || '{}');
+                    return { ...this.initDefault(), ...data };
+                } catch (e) {
+                    console.error('加载数据失败', e);
+                    return this.initDefault();
+                }
+            },
+
+            // 初始化默认值（防止数据缺失）
+            initDefault() {
+                return {
+                    affirmations: [],
+                    categories: ['财富', '事业', '健康', '关系', '自我成长'],
+                    visionBoard: [],
+                    knowledgeBoard: [],
+                    subs: [],
+                    subCategories: ['显化', '冥想', '疗愈', '成长'],
+                    gratitude: [],
+                    counter: {
+                        today: 0,
+                        goal: 108,
+                        week: 0,
+                        total: 0,
+                        lastReset: new Date().toISOString().split('T')[0]
+                    },
+                    heroBanner: {
+                        customImage: '',
+                        useDefault: true
+                    },
+                    theme: 'sage',
+                    meditation: {
+                        time: 300,
+                        isRunning: false,
+                        currentTime: 300,
+                        noise: '',
+                        volume: 40
+                    }
+                };
+            },
+
+            // 保存数据
+            save(data) {
+                localStorage.setItem('gardenData', JSON.stringify(data));
+            },
+
+            // 更新部分数据
+            update(key, value) {
+                const data = this.load();
+                if (typeof key === 'object') {
+                    Object.assign(data, key);
+                } else {
+                    data[key] = value;
+                }
+                this.save(data);
+                return data;
+            },
+
+            // 获取指定数据
+            get(key) {
+                const data = this.load();
+                return key ? data[key] : data;
+            }
+        };
+
+        // 工具函数
+        const Utils = {
+            // 生成唯一ID
+            generateId() {
+                return Date.now() + '-' + Math.random().toString(36).substr(2, 9);
+            },
+
+            // 格式化时间
+            formatTime(seconds) {
+                const mins = Math.floor(seconds / 60);
+                const secs = seconds % 60;
+                return `${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
+            },
+
+            // 显示提示框
+            showToast(message, type = 'success') {
+                const container = document.getElementById('toast-container');
+                const toast = document.createElement('div');
+                toast.className = `toast ${type}`;
+                toast.textContent = message;
+                container.appendChild(toast);
+                
+                setTimeout(() => {
+                    toast.remove();
+                }, 3000);
+            },
+
+            // 显示确认框
+            showConfirm(message, confirmCallback) {
+                if (confirm(message)) {
+                    confirmCallback();
+                }
+            },
+
+            // 图片转base64
+            fileToBase64(file, callback) {
+                const reader = new FileReader();
+                reader.onload = (e) => callback(e.target.result);
+                reader.readAsDataURL(file);
+            },
+
+            // 检查日期是否为今日
+            isToday(dateStr) {
+                const today = new Date().toISOString().split('T')[0];
+                return dateStr === today;
+            }
+        };
+
+        // 页面初始化
+        document.addEventListener('DOMContentLoaded', function() {
+            const gardenData = GardenData.init();
+            
+            // 初始化标签切换
+            initTabSwitch();
+            
+            // 初始化显化中心
+            initCounterTab();
+            
+            // 初始化愿景花园
+            initVisionTab();
+            
+            // 初始化酥饼仓库
+            initSubsTab();
+            
+            // 初始化感恩日记
+            initGratitudeTab();
+            
+            // 初始化显化知识库
+            initKnowledgeTab();
+            
+            // 初始化浮动计数器
+            initFloatCounter();
+            
+            // 初始化冥想计时器
+            initMeditationTimer();
+            
+            // 初始化主题切换
+            initThemeSwitch();
+            
+            // 初始化顶部Banner
+            initHeroBanner();
+            
+            Utils.showToast('数据已加载完成', 'success');
+        });
+
+        // 标签切换
+        function initTabSwitch() {
+            const tabBtns = document.querySelectorAll('.tab-btn');
+            const tabContents = document.querySelectorAll('.tab-content');
+            
+            tabBtns.forEach(btn => {
+                btn.addEventListener('click', function() {
+                    // 移除所有激活状态
+                    tabBtns.forEach(b => b.classList.remove('active'));
+                    tabContents.forEach(c => c.classList.add('hidden'));
+                    
+                    // 添加当前激活状态
+                    this.classList.add('active');
+                    const tabId = this.getAttribute('data-tab');
+                    document.getElementById(tabId).classList.remove('hidden');
+                });
+            });
+        }
+
+        // 初始化显化中心
+        function initCounterTab() {
+            const data = GardenData.get();
+            const affirmationsList = document.getElementById('affirmations-list');
+            const newAffirmationInput = document.getElementById('new-affirmation');
+            const addAffirmationBtn = document.getElementById('add-affirmation');
+            const categorySelect = document.getElementById('affirmation-category');
+            const categoryContainer = document.getElementById('category-container');
+            const randomAffirmation = document.getElementById('random-affirmation');
+            const nextAffirmationBtn = document.getElementById('next-affirmation');
+            const fcAffSelect = document.getElementById('fc-aff-select');
+
+            // 渲染显化句列表
+            function renderAffirmations(filter = 'all') {
+                const affirmations = GardenData.get('affirmations') || [];
+                affirmationsList.innerHTML = '';
+                
+                // 更新计数器下拉选择
+                fcAffSelect.innerHTML = '<option value="">不指定A句（仅总计）</option>';
+                
+                // 过滤显化句
+                const filteredAffs = filter === 'all' 
+                    ? affirmations 
+                    : affirmations.filter(aff => aff.category === filter);
+                
+                if (filteredAffs.length === 0) {
+                    affirmationsList.innerHTML = `
+                        <div class="col-span-1 md:col-span-2 text-center py-8 text-sage/70">
+                            <i class="fa fa-comment-o text-4xl mb-2"></i>
+                            <p>暂无显化句，添加你的第一条显化句吧</p>
+                        </div>
+                    `;
+                    return;
+                }
+                
+                // 渲染显化句卡片
+                filteredAffs.forEach(aff => {
+                    // 添加到计数器下拉
+                    const option = document.createElement('option');
+                    option.value = aff.id;
+                    option.textContent = aff.text.substring(0, 20) + (aff.text.length > 20 ? '...' : '');
+                    fcAffSelect.appendChild(option);
+                    
+                    // 创建显化句卡片
+                    const card = document.createElement('div');
+                    card.className = 'aff-card fade-in';
+                    card.setAttribute('data-id', aff.id);
+                    card.innerHTML = `
+                        <div class="flex-1">
+                            <p class="text-earth font-medium">${aff.text}</p>
+                            <div class="aff-progress">
+                                <div class="aff-progress-bar bg-sage" style="width: ${Math.min(100, (aff.count / GardenData.get('counter').goal) * 100)}%"></div>
+                            </div>
+                            <p class="text-xs text-sage mt-1">
+                                <span>${aff.count}/${GardenData.get('counter').goal}</span>
+                                <span class="ml-2">分类: ${aff.category}</span>
+                            </p>
+                        </div>
+                        <div class="flex gap-2">
+                            <button class="aff-count-btn bounce-click text-sage hover:text-earth" title="增加计数">
+                                <i class="fa fa-plus-circle"></i>
+                            </button>
+                            <button class="aff-edit-btn bounce-click text-gold hover:text-earth" title="编辑">
+                                <i class="fa fa-pencil"></i>
+                            </button>
+                            <button class="aff-delete-btn bounce-click text-red-400 hover:text-red-500" title="删除">
+                                <i class="fa fa-trash-o"></i>
+                            </button>
+                        </div>
+                    `;
+                    affirmationsList.appendChild(card);
+                    
+                    // 绑定卡片事件
+                    card.querySelector('.aff-count-btn').addEventListener('click', () => updateAffirmationCount(aff.id, 1));
+                    card.querySelector('.aff-edit-btn').addEventListener('click', () => editAffirmation(aff.id));
+                    card.querySelector('.aff-delete-btn').addEventListener('click', () => deleteAffirmation(aff.id));
+                });
+                
+                // 更新随机显化句
+                updateRandomAffirmation();
+            }
+
+            // 更新随机显化句
+            function updateRandomAffirmation() {
+                const affirmations = GardenData.get('affirmations') || [];
+                if (affirmations.length > 0) {
+                    const randomIdx = Math.floor(Math.random() * affirmations.length);
+                    randomAffirmation.textContent = affirmations[randomIdx].text;
+                }
+            }
+
+            // 更新显化句计数
+            function updateAffirmationCount(id, increment) {
+                const data = GardenData.load();
+                const affIndex = data.affirmations.findIndex(a => a.id == id);
+                
+                if (affIndex !== -1) {
+                    data.affirmations[affIndex].count += increment;
+                    data.counter.today += increment;
+                    data.counter.total += increment;
+                    
+                    // 检查是否跨周
+                    const now = new Date();
+                    const day = now.getDay();
+                    if (day === 0) { // 周日重置周计数
+                        data.counter.week = data.counter.today;
+                    } else {
+                        data.counter.week += increment;
+                    }
+                    
+                    GardenData.save(data);
+                    renderAffirmations(document.querySelector('.category-btn.active')?.getAttribute('data-category') || 'all');
+                    updateFloatCounter();
+                    Utils.showToast('计数已更新', 'success');
+                }
+            }
+
+            // 添加显化句
+            function addAffirmation() {
+                const text = newAffirmationInput.value.trim();
+                const category = categorySelect.value;
+                
+                if (!text) {
+                    Utils.showToast('请输入显化句内容', 'warn');
+                    return;
+                }
+                
+                const data = GardenData.load();
+                const newAff = {
+                    id: Utils.generateId(),
+                    text,
+                    category,
+                    count: 0,
+                    createTime: new Date().toISOString()
+                };
+                
+                data.affirmations.push(newAff);
+                GardenData.save(data);
+                
+                newAffirmationInput.value = '';
+                renderAffirmations(document.querySelector('.category-btn.active')?.getAttribute('data-category') || 'all');
+                Utils.showToast('显化句添加成功', 'success');
+            }
+
+            // 编辑显化句
+            function editAffirmation(id) {
+                const data = GardenData.load();
+                const aff = data.affirmations.find(a => a.id == id);
+                
+                if (aff) {
+                    const newText = prompt('编辑显化句', aff.text);
+                    if (newText && newText.trim()) {
+                        aff.text = newText.trim();
+                        GardenData.save(data);
+                        renderAffirmations(document.querySelector('.category-btn.active')?.getAttribute('data-category') || 'all');
+                        Utils.showToast('显化句已更新', 'success');
+                    }
+                }
+            }
+
+            // 删除显化句
+            function deleteAffirmation(id) {
+                Utils.showConfirm('确定要删除这条显化句吗？', () => {
+                    const data = GardenData.load();
+                    data.affirmations = data.affirmations.filter(a => a.id != id);
+                    GardenData.save(data);
+                    renderAffirmations(document.querySelector('.category-btn.active')?.getAttribute('data-category') || 'all');
+                    Utils.showToast('显化句已删除', 'info');
+                });
+            }
+
+            // 渲染分类按钮
+            function renderCategoryButtons() {
+                const categories = GardenData.get('categories') || [];
+                const activeCategory = document.querySelector('.category-btn.active')?.getAttribute('data-category') || 'all';
+                
+                // 清空现有分类按钮（保留全部和操作按钮）
+                const allBtn = categoryContainer.querySelector('[data-category="all"]');
+                const addBtn = document.getElementById('add-category');
+                const manageBtn = document.getElementById('manage-categories');
+                
+                categoryContainer.innerHTML = '';
+                categoryContainer.appendChild(allBtn);
+                
+                // 添加分类按钮
+                categories.forEach(cat => {
+                    const btn = document.createElement('button');
+                    btn.className = `category-btn px-3 py-1.5 bg-sage/10 text-sage rounded-full text-sm ${activeCategory === cat ? 'active' : 'text-earth hover:text-sage'} transition-all duration-300`;
+                    btn.setAttribute('data-category', cat);
+                    btn.textContent = cat;
+                    categoryContainer.appendChild(btn);
+                    
+                    btn.addEventListener('click', () => {
+                        document.querySelectorAll('.category-btn').forEach(b => b.classList.remove('active'));
+                        btn.classList.add('active');
+                        renderAffirmations(cat);
+                    });
+                });
+                
+                // 添加操作按钮
+                categoryContainer.appendChild(addBtn);
+                categoryContainer.appendChild(manageBtn);
+                
+                // 更新分类下拉框
+                categorySelect.innerHTML = '';
+                categories.forEach(cat => {
+                    const option = document.createElement('option');
+                    option.value = cat;
+                    option.textContent = cat;
+                    categorySelect.appendChild(option);
+                });
+            }
+
+            // 添加分类
+            document.getElementById('add-category').addEventListener('click', () => {
+                const newCat = prompt('输入新分类名称');
+                if (newCat && newCat.trim()) {
+                    const data = GardenData.load();
+                    if (!data.categories.includes(newCat.trim())) {
+                        data.categories.push(newCat.trim());
+                        GardenData.save(data);
+                        renderCategoryButtons();
+                        Utils.showToast('分类添加成功', 'success');
+                    } else {
+                        Utils.showToast('该分类已存在', 'warn');
+                    }
+                }
+            });
+
+            // 管理分类
+            document.getElementById('manage-categories').addEventListener('click', () => {
+                const categories = GardenData.get('categories') || [];
+                const catStr = categories.join('\n');
+                const newCatStr = prompt('编辑分类（每行一个）', catStr);
+                
+                if (newCatStr !== null) {
+                    const newCats = newCatStr.split('\n').map(c => c.trim()).filter(c => c);
+                    const uniqueCats = [...new Set(newCats)];
+                    
+                    const data = GardenData.load();
+                    data.categories = uniqueCats;
+                    
+                    // 更新显化句分类（移除不存在的分类）
+                    data.affirmations.forEach(aff => {
+                        if (!uniqueCats.includes(aff.category)) {
+                            aff.category = uniqueCats[0] || '未分类';
+                        }
+                    });
+                    
+                    GardenData.save(data);
+                    renderCategoryButtons();
+                    renderAffirmations();
+                    Utils.showToast('分类已更新', 'success');
+                }
+            });
+
+            // 绑定事件
+            addAffirmationBtn.addEventListener('click', addAffirmation);
+            newAffirmationInput.addEventListener('keypress', (e) => {
+                if (e.key === 'Enter') addAffirmation();
+            });
+            
+            nextAffirmationBtn.addEventListener('click', updateRandomAffirmation);
+            
+            // 初始化
+            renderCategoryButtons();
+            renderAffirmations();
+        }
+
+        // 初始化愿景花园
+        function initVisionTab() {
+            const visionBoard = document.getElementById('vision-board');
+            const uploadImageInput = document.getElementById('upload-image');
+            const visionCategory = document.getElementById('vision-category');
+            const exportWordlessBtn = document.getElementById('export-wordless');
+            const emptyVision = document.getElementById('empty-vision');
+
+            // 渲染愿景花园
+            function renderVisionBoard() {
+                const visionData = GardenData.get('visionBoard') || [];
+                
+                // 显示/隐藏空状态
+                if (visionData.length === 0) {
+                    emptyVision.style.display = 'flex';
+                } else {
+                    emptyVision.style.display = 'none';
+                }
+                
+                // 清空现有内容
+                visionBoard.innerHTML = '';
+                visionBoard.appendChild(emptyVision);
+                
+                // 添加愿景块
