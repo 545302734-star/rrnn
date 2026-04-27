@@ -176,7 +176,7 @@
         </div>
     </div>
     <header class="py-6 md:py-8 text-center relative z-10">
-        <h1 class="text-3xl md:text-5xl font-serif text-earth mb-3 tracking-wide">我的显化花园</h1>
+        <h1 class="text-xl md:text-2xl font-serif text-earth mb-2 tracking-wide">Manifestation Garden</h1>
         <p class="text-sage italic text-base md:text-lg font-light">"The universe is conspiring in your favor."</p>
     </header>
     <nav class="max-w-6xl mx-auto px-4 mb-3 md:mb-4 relative z-10">
@@ -1072,7 +1072,36 @@
         const colorSwatches=MORANDI_COLORS.map(c=>`<button type="button" class="js-swatch swatch-btn ${c===current.baseColor?'active':''}" data-color="${c}" style="background:${c}" title="${c}"></button>`).join('');
         const opacityPct=Math.round((current.opacity||0.92)*100);
         const o=document.createElement('div');o.className='modal-overlay';
-        o.innerHTML=`<div class="modal-box"><p class="text-earth text-base mb-3">${isEdit?'编辑知识卡片':'添加知识卡片'}</p><div class="space-y-3"><input type="text" class="js-title w-full px-4 py-2.5 rounded-lg border border-sage/20 focus:outline-none focus:border-sage bg-white/50 text-sm" value="${E(current.title||'')}" placeholder="标题（如：显化四步法）"><textarea class="js-content w-full px-4 py-2.5 rounded-lg border border-sage/20 focus:outline-none focus:border-sage bg-white/50 text-sm" rows="4" placeholder="知识内容...">${E(current.content||'')}</textarea><input type="url" class="js-source w-full px-4 py-2.5 rounded-lg border border-sage/20 focus:outline-none focus:border-sage bg-white/50 text-sm" value="${E(current.source||'')}" placeholder="来源链接（小红书/B站/网页）"><select class="js-cat w-full px-4 py-2.5 rounded-lg border border-sage/20 focus:outline-none focus:border-sage bg-white/50 text-sm">${cats}</select><div class="grid grid-cols-2 gap-3"><div><label class="text-xs text-sage mb-1 block">颜色（莫兰迪）</label><div class="swatch-grid">${colorSwatches}</div><input type="hidden" class="js-color" value="${current.baseColor}"></div><div><label class="text-xs text-sage">透明度: <span class="js-op-val">${opacityPct}</span>%</label><input type="range" class="js-op w-full accent-sage" min="10" max="100" value="${opacityPct}"></div></div><div class="grid grid-cols-3 gap-3"><div><label class="text-xs text-sage">字号</label><input type="range" class="js-fs w-full accent-sage" min="10" max="24" value="${current.fontSize||13}"></div><div><label class="text-xs text-sage">列宽</label><input type="range" class="js-cs w-full accent-sage" min="1" max="8" value="${current.cs||2}"></div><div><label class="text-xs text-sage">行高</label><input type="range" class="js-rs w-full accent-sage" min="1" max="6" value="${current.rs||2}"></div></div></div><div class="flex justify-end gap-3 mt-4"><button class="js-cancel px-5 py-2 bg-sageLight/30 text-earth rounded-lg text-sm">取消</button><button class="js-ok px-5 py-2 bg-sage text-white rounded-lg text-sm">${isEdit?'保存':'添加'}</button></div></div>`;
+        o.innerHTML=`
+            <div class="modal-box">
+                <p class="text-earth text-base mb-3">${isEdit?'编辑知识卡片':'添加知识卡片'}</p>
+                <div class="space-y-3">
+                    <input type="text" class="js-title w-full px-4 py-2.5 rounded-lg border border-sage/20 focus:outline-none focus:border-sage bg-white/50 text-sm" value="${E(current.title||'')}" placeholder="标题（如：显化四步法）">
+                    <textarea class="js-content w-full px-4 py-2.5 rounded-lg border border-sage/20 focus:outline-none focus:border-sage bg-white/50 text-sm" rows="4" placeholder="知识内容...">${E(current.content||'')}</textarea>
+                    <input type="url" class="js-source w-full px-4 py-2.5 rounded-lg border border-sage/20 focus:outline-none focus:border-sage bg-white/50 text-sm" value="${E(current.source||'')}" placeholder="来源链接（小红书/B站/网页）">
+                    <select class="js-cat w-full px-4 py-2.5 rounded-lg border border-sage/20 focus:outline-none focus:border-sage bg-white/50 text-sm">${cats}</select>
+                    <div class="grid grid-cols-2 gap-3">
+                        <div>
+                            <label class="text-xs text-sage mb-1 block">颜色（莫兰迪）</label>
+                            <div class="swatch-grid">${colorSwatches}</div>
+                            <input type="hidden" class="js-color" value="${current.baseColor}">
+                        </div>
+                        <div>
+                            <label class="text-xs text-sage">透明度: <span class="js-op-val">${opacityPct}</span>%</label>
+                            <input type="range" class="js-op w-full accent-sage" min="10" max="100" value="${opacityPct}">
+                        </div>
+                    </div>
+                    <div class="grid grid-cols-3 gap-3">
+                        <div><label class="text-xs text-sage">字号</label><input type="range" class="js-fs w-full accent-sage" min="10" max="24" value="${current.fontSize||13}"></div>
+                        <div><label class="text-xs text-sage">列宽</label><input type="range" class="js-cs w-full accent-sage" min="1" max="8" value="${current.cs||2}"></div>
+                        <div><label class="text-xs text-sage">行高</label><input type="range" class="js-rs w-full accent-sage" min="1" max="6" value="${current.rs||2}"></div>
+                    </div>
+                </div>
+                <div class="flex justify-end gap-3 mt-4">
+                    <button class="js-cancel px-5 py-2 bg-sageLight/30 text-earth rounded-lg text-sm">取消</button>
+                    <button class="js-ok px-5 py-2 bg-sage text-white rounded-lg text-sm">${isEdit?'保存':'添加'}</button>
+                </div>
+            </div>`;
         o.querySelectorAll('.js-swatch').forEach(btn=>{btn.onclick=()=>{o.querySelectorAll('.js-swatch').forEach(b=>b.classList.remove('active'));btn.classList.add('active');o.querySelector('.js-color').value=btn.dataset.color}});
         o.querySelector('.js-op').oninput=()=>o.querySelector('.js-op-val').textContent=o.querySelector('.js-op').value;
         o.querySelector('.js-cancel').onclick=()=>o.remove();
@@ -1434,13 +1463,16 @@
 
     // ===== 酥饼仓库 =====
     function getSubCategories(){return Array.isArray(data.categories)&&data.categories.length?data.categories:['未分类']}
+    let subFilter='all';
+
     function initSubs(){
         renderSubCategories();renderSubs();
-        document.getElementById('add-sub').onclick=()=>{
+        const addSubBtn=document.getElementById('add-sub');
+        if(addSubBtn)addSubBtn.onclick=()=>{
             const title=document.getElementById('sub-title').value.trim(),url=document.getElementById('sub-url').value.trim(),cat=document.getElementById('sub-category').value;
             if(!title||!url)return toast('请填写完整信息','warn');
             data.subs.push({id:Date.now(),title,url,cat,time:0});saveData();
-            document.getElementById('sub-title').value='';document.getElementById('sub-url').value='';renderSubs();toast('酥饼已添加');
+            document.getElementById('sub-title').value='';document.getElementById('sub-url').value='';renderSubs(subFilter);toast('酥饼已添加');
         };
         bindSubCategoryBtns();
     }
@@ -1467,9 +1499,11 @@
             }
         });
     }
-    function renderSubs(filter='all'){
+    function renderSubs(filter){
+        if(typeof filter==='string')subFilter=filter;
+        const currentFilter=subFilter||'all';
         const list=document.getElementById('subs-list');
-        let arr=filter==='all'?data.subs:data.subs.filter(x=>x.cat===filter);
+        let arr=currentFilter==='all'?data.subs:data.subs.filter(x=>x.cat===currentFilter);
         if(!arr.length){list.innerHTML='<div class="col-span-full text-center text-sage py-12">暂无酥饼</div>';return}
         list.innerHTML='';arr.forEach(item=>{
             const card=document.createElement('div');
@@ -1510,12 +1544,12 @@
                     const t=o.querySelector('.js-title').value.trim(),u=o.querySelector('.js-url').value.trim();
                     if(!t||!u)return toast('标题和链接不能为空','warn');
                     item.title=t;item.url=u;item.cat=o.querySelector('.js-cat').value;item.note=o.querySelector('.js-note').value.trim();
-                    saveData();o.remove();renderSubs(filter);toast('酥饼已更新');
+                    saveData();o.remove();renderSubs(currentFilter);toast('酥饼已更新');
                 };
                 o.onclick=e=>{if(e.target===o)o.remove()};
                 document.body.appendChild(o);
             };
-            card.querySelector('.del-sub').onclick=()=>showConfirm('删除该酥饼？',()=>{data.subs=data.subs.filter(x=>x.id!==item.id);saveData();renderSubs()});
+            card.querySelector('.del-sub').onclick=()=>showConfirm('删除该酥饼？',()=>{data.subs=data.subs.filter(x=>x.id!==item.id);saveData();renderSubs(currentFilter);toast('酥饼已删除')});
             list.appendChild(card);
         });
     }
